@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cluster-manager-config
+  namespace: mysql-cluster
+immutable: true
+data:
+  config.ini: |+
+    [ndbd default]
+    NoOfReplicas=2
+
+    [ndb_mgmd]
+    hostname=cluster-manager
+    datadir=/var/lib/mysql-cluster
+
+    [ndbd]
+    hostname=cluster-data-node-2
+    NodeId=2
+    datadir=/var/lib/mysql/data
+
+    [ndbd]
+    hostname=cluster-data-node-3
+    NodeId=3
+    datadir=/var/lib/mysql/data
+
+    [mysqld]
+    hostname=cluster-server
+    # NodeId=4
+
+...

@@ -1,0 +1,12 @@
+*.crt
+*.key
+*.pem
+*.tgz
+*.tar.gz
+*.tar
+mnt
+istioctl
+private_key.json
+*secrets.yaml
+.log
+*.log

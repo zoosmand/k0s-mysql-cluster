@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-data-node-storage-10
+  labels:
+    file-system: ext4
+    physical-volume: lvm-thin-partition
+    max-size: 10GiB
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: mysql-storage-10
+  local:
+    path: /mnt/mysql/10
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - mp1
+
+...
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-data-node-storage-20
+  labels:
+    file-system: ext4
+    physical-volume: lvm-thin-partition
+    max-size: 20GiB
+spec:
+  capacity:
+    storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: mysql-storage-20
+  local:
+    path: /mnt/mysql/20
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - mp1
+
+...

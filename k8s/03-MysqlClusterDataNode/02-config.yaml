@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cluster-data-node-2-config
+  namespace: mysql-cluster
+immutable: true
+data:
+  my.cnf: |+
+    [mysql_cluster]
+    ndb-connectstring=cluster-manager
+
+    # [mysql]
+    # datadir=/var/lib/mysql-data
+
+...
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cluster-data-node-3-config
+  namespace: mysql-cluster
+immutable: true
+data:
+  my.cnf: |+
+    [mysql_cluster]
+    ndb-connectstring=cluster-manager
+
+    # [mysql]
+    # datadir=/var/lib/mysql-data
+
+...

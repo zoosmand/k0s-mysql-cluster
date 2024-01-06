@@ -1,0 +1,102 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-cluster-discovery-srv-service
+  namespace: mysql-cluster
+spec:
+  selector:
+    app: 3779f2cc-771e-11ee-a87e-23be039228b9
+  # clusterIP: None
+  type: LoadBalancer
+  loadBalancerIP: 10.216.80.34
+  ports:
+    - protocol: TCP
+      name: "tcp5333"
+      port: 5333
+      targetPort: 5333
+    - protocol: TCP
+      name: "tcp53"
+      port: 53
+      targetPort: 53
+    - protocol: UDP
+      name: "udp53"
+      port: 53
+      targetPort: 53
+
+...
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: 3779f2cc-771e-11ee-a87e-23be039228b9
+  name: mysql-cluster-discovery-srv
+  namespace: mysql-cluster
+spec:
+  replicas: 1
+  serviceName: mysql-cluster-discovery-srv-daemon
+  selector:
+    matchLabels:
+      app: 3779f2cc-771e-11ee-a87e-23be039228b9
+  template:
+    metadata:
+      labels:
+        app: 3779f2cc-771e-11ee-a87e-23be039228b9
+    spec:
+      nodeSelector:
+        node-type: worker
+      restartPolicy: Always
+      hostname: mysql-cluster-discovery-srv
+      subdomain: mysql-cluster-discovery-srv-local-service
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-discovery-service
+        image: hub.askug.net/mysql-cluster-discovery-service-sb-11:0.0.3
+        args: [ "kube-dns.kube-system.svc.kube.askug.net" ]
+
+        ports:
+        - name: tcp5333
+          protocol: TCP
+          containerPort: 5333
+          hostPort: 5333
+
+        - name: tcp53
+          protocol: TCP
+          containerPort: 53
+          hostPort: 53
+
+        - name: udp53
+          protocol: UDP
+          containerPort: 53
+          hostPort: 53
+
+        startupProbe:
+          tcpSocket:
+            port: tcp53
+          failureThreshold: 10
+          periodSeconds: 5
+
+        livenessProbe:
+          tcpSocket:
+            port: tcp53
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
+        readinessProbe:
+          tcpSocket:
+            port: tcp53
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 500m
+          requests:
+            memory: 128Mi
+            cpu: 250m
+
+...

@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cluster-server-config
+  namespace: mysql-cluster
+immutable: true
+data:
+  my.cnf: |+
+    !includedir /etc/mysql/conf.d/
+    !includedir /etc/mysql/mysql.conf.d/
+
+    [mysqld]
+    ndbcluster
+    max_connect_errors=10000
+    
+    [mysql_cluster]
+    ndb_connectstring=cluster-manager
+    ndb-mgmd-host=cluster-manager
+
+...
