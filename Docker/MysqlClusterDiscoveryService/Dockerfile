@@ -8,7 +8,7 @@ LABEL name="MySQL Cluster Discovery Service"
 
 ARG APP=app.sh
 
-ARG BUILD_VERSION=0.0.3
+ARG BUILD_VERSION=0.0.5
 
 RUN \
 	set -eux; \

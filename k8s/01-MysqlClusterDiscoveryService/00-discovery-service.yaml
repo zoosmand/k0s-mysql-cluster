@@ -28,7 +28,7 @@ spec:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     app: 3779f2cc-771e-11ee-a87e-23be039228b9
@@ -36,7 +36,7 @@ metadata:
   namespace: mysql-cluster
 spec:
   replicas: 1
-  # serviceName: mysql-cluster-discovery-srv-daemon
+  serviceName: mysql-cluster-discovery-srv-daemon
   selector:
     matchLabels:
       app: 3779f2cc-771e-11ee-a87e-23be039228b9
@@ -54,7 +54,7 @@ spec:
       containers:
       # ----------------------------------------------------
       - name: cluster-discovery-service
-        image: hub.askug.net/mysql-cluster-discovery-service-sb-11:0.0.3
+        image: hub.askug.net/mysql-cluster-discovery-service-sb-11:0.0.5
         args: [ "kube-dns.kube-system.svc.kube.askug.net" ]
         imagePullPolicy: Always
 

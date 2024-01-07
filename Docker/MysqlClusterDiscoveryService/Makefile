@@ -2,7 +2,7 @@
 REGISTRY := hub.askug.net
 SERVICE := mysql-cluster-discovery-service
 PROJECT := sb-11
-VERSION := 0.0.3
+VERSION := 0.0.5
 
 all: build push
 
