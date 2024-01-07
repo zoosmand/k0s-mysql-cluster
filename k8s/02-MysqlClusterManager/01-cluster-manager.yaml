@@ -52,7 +52,7 @@ spec:
         app: 0ddab094-7554-11ee-904c-b33e59e6adfc
     spec:
       nodeSelector:
-        node-type: worker
+        kubernetes.io/hostname: mp8
       restartPolicy: Always
       # hostname: mysql-cluster-manager
       # subdomain: mysql-cluster-manager-local-service

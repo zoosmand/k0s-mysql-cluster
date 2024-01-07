@@ -28,7 +28,7 @@ spec:
 
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   labels:
     app: 3779f2cc-771e-11ee-a87e-23be039228b9
@@ -36,7 +36,7 @@ metadata:
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: mysql-cluster-discovery-srv-daemon
+  # serviceName: mysql-cluster-discovery-srv-daemon
   selector:
     matchLabels:
       app: 3779f2cc-771e-11ee-a87e-23be039228b9
@@ -46,7 +46,7 @@ spec:
         app: 3779f2cc-771e-11ee-a87e-23be039228b9
     spec:
       nodeSelector:
-        node-type: worker
+        kubernetes.io/hostname: mp1
       restartPolicy: Always
       hostname: mysql-cluster-discovery-srv
       subdomain: mysql-cluster-discovery-srv-local-service
@@ -56,6 +56,7 @@ spec:
       - name: cluster-discovery-service
         image: hub.askug.net/mysql-cluster-discovery-service-sb-11:0.0.3
         args: [ "kube-dns.kube-system.svc.kube.askug.net" ]
+        imagePullPolicy: Always
 
         ports:
         - name: tcp5333

@@ -1,4 +1,4 @@
-FROM alpine:3.18
+FROM alpine:3.19
 
 LABEL maintainer="zoosmand@gmail.com"
 LABEL build_date="2024-01-06"
@@ -8,7 +8,7 @@ LABEL name="MySQL Cluster Discovery Service"
 
 ARG APP=app.sh
 
-ARG BUILD_VERSION=0.0.1
+ARG BUILD_VERSION=0.0.3
 
 RUN \
 	set -eux; \

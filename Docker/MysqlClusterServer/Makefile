@@ -2,7 +2,7 @@
 REGISTRY := hub.askug.net
 SERVICE := mysql-server
 PROJECT := sb-11
-VERSION := 0.0.4
+VERSION := 0.0.1
 
 all: build push
 
