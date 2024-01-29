@@ -55,7 +55,8 @@ spec:
       # ----------------------------------------------------
       - name: cluster-discovery-service
         image: hub.askug.net/mysql-cluster-discovery-service-sb-11:0.0.5
-        args: [ "kube-dns.kube-system.svc.kube.askug.net" ]
+        args: [ "10.96.0.10" ]
+        # args: [ "kube-dns.kube-system.svc.kube.askug.net" ]
         imagePullPolicy: Always
 
         ports:

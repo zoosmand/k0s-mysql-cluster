@@ -52,7 +52,7 @@ spec:
         app: 0ddab094-7554-11ee-904c-b33e59e6adfc
     spec:
       nodeSelector:
-        kubernetes.io/hostname: mp8
+        kubernetes.io/hostname: mp1
       restartPolicy: Always
       # hostname: mysql-cluster-manager
       # subdomain: mysql-cluster-manager-local-service
@@ -137,6 +137,7 @@ spec:
       dnsConfig:
         nameservers:
         - 10.216.80.34
+        - 10.96.0.10
 
       volumes:
       - name: cluster-config

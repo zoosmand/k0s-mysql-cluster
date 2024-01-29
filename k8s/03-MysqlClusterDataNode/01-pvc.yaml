@@ -5,14 +5,14 @@ metadata:
   name: mysql-cluster-data-node-2-cache
   namespace: mysql-cluster
   labels:
-    maxSize: 10Gi
+    maxSize: 20Gi
 spec:
-  storageClassName: mysql-storage-10
+  storageClassName: mysql-data-mp1
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 10Gi
+      storage: 20Gi
 
 ...
 
@@ -25,7 +25,7 @@ metadata:
   labels:
     maxSize: 20Gi
 spec:
-  storageClassName: mysql-storage-20
+  storageClassName: mysql-data-mp8
   accessModes:
     - ReadWriteMany
   resources:

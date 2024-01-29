@@ -42,7 +42,7 @@ spec:
         app: fdbb0656-7ca5-11ee-9535-00155d91d86a
     spec:
       nodeSelector:
-        node-type: worker
+        kubernetes.io/hostname: mp8
       restartPolicy: Always
 
       initContainers:
@@ -129,6 +129,7 @@ spec:
       dnsConfig:
         nameservers:
         - 10.216.80.34
+        - 10.96.0.10
 
       volumes:
       - name: server-config
