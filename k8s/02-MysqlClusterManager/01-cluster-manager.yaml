@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-cluster-manager-service
+  name: cluster-manager-service
   namespace: mysql-cluster
 spec:
   selector:
@@ -42,7 +42,7 @@ metadata:
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: mysql-cluster-manager-daemon
+  serviceName: mysql-cluster
   selector:
     matchLabels:
       app: 0ddab094-7554-11ee-904c-b33e59e6adfc
@@ -52,32 +52,39 @@ spec:
         app: 0ddab094-7554-11ee-904c-b33e59e6adfc
     spec:
       nodeSelector:
-        kubernetes.io/hostname: mp1
+        kubernetes.io/hostname: mp8
       restartPolicy: Always
+      hostname: cluster-manager
       # hostname: mysql-cluster-manager
       # subdomain: mysql-cluster-manager-local-service
+      hostAliases:
+      - ip: 127.0.0.1
+        hostnames:
+        - cluster-manager-service.mysql-cluster.svc.kube.askug.net
 
-      initContainers:
-      # ----------------------------------------------------
-      - name: init-cluster-manager
-        image: busybox:1.36
-        command: [ "sh", "-c" ]
-        args: [ "
-            echo \"$POD_IP cluster-manager\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
-          " ]
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
+      # initContainers:
+      # # ----------------------------------------------------
+      # - name: init-cluster-manager
+      #   image: busybox:1.36
+      #   command: [ "sh", "-c" ]
+      #   args: [ "
+      #       tail -f /dev/null
+      #       # echo \"$POD_IP cluster-manager\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
+      #     " ]
+      #   env:
+      #   - name: POD_IP
+      #     valueFrom:
+      #       fieldRef:
+      #         fieldPath: status.podIP
 
-        resources:
-          limits:
-            memory: 64Mi
-            cpu: 250m
-          requests:
-            memory: 32Mi
-            cpu: 100m
+      #   resources:
+      #     limits:
+      #       memory: 64Mi
+      #       cpu: 250m
+      #     requests:
+      #       memory: 32Mi
+      #       cpu: 100m
+
 
       containers:
       # ----------------------------------------------------
@@ -87,8 +94,10 @@ spec:
           sleep 10;
           /usr/sbin/ndb_mgmd
             --config-file=/var/lib/mysql-cluster/config.ini
-            --nodaemon
+            --daemon
             --reload
+          ;
+          tail -f /dev/null
           " ]
 
         ports:
@@ -96,24 +105,24 @@ spec:
           containerPort: 1186
           hostPort: 1186
 
-        startupProbe:
-          tcpSocket:
-            host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
-            port: 53
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        # startupProbe:
+        #   tcpSocket:
+        #     host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
+        #     port: 53
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 10
 
-        livenessProbe:
-          tcpSocket:
-            port: tcp1186
-          initialDelaySeconds: 40
-          periodSeconds: 10
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 10
 
-        readinessProbe:
-          tcpSocket:
-            port: tcp1186
-          initialDelaySeconds: 40
-          periodSeconds: 5
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 5
 
         volumeMounts:
         - mountPath: "/var/lib/mysql-cluster/config.ini"
@@ -133,11 +142,10 @@ spec:
             memory: 1Gi
             cpu: "1"
 
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-        - 10.216.80.34
-        - 10.96.0.10
+      # dnsPolicy: "None"
+      # dnsConfig:
+      #   nameservers:
+      #   - 10.203.10.5
 
       volumes:
       - name: cluster-config

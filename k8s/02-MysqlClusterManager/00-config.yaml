@@ -11,21 +11,21 @@ data:
     NoOfReplicas=2
 
     [ndb_mgmd]
-    hostname=cluster-manager
+    hostname=cluster-manager-service.mysql-cluster.svc.kube.askug.net
     datadir=/var/lib/mysql-cluster
 
     [ndbd]
-    hostname=cluster-data-node-2
+    hostname=cluster-node-2-service.mysql-cluster.svc.kube.askug.net
     NodeId=2
     datadir=/var/lib/mysql/data
 
     [ndbd]
-    hostname=cluster-data-node-3
+    hostname=cluster-node-3-service.mysql-cluster.svc.kube.askug.net
     NodeId=3
     datadir=/var/lib/mysql/data
 
     [mysqld]
-    hostname=cluster-server
+    hostname=cluster-server-service.mysql-cluster.svc.kube.askug.net
     # NodeId=4
 
 ...

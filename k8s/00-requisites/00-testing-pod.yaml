@@ -10,7 +10,7 @@ spec:
   restartPolicy: OnFailure
   dnsPolicy: ClusterFirst
   nodeSelector:
-    kubernetes.io/hostname: mp1
+    kubernetes.io/hostname: mp8
   # serviceAccountName: sb-11-monitoring-service-account
   containers:
 

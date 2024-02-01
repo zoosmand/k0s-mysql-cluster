@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-cluster-server-service
+  name: cluster-server-service
   namespace: mysql-cluster
 spec:
   selector:
@@ -32,7 +32,7 @@ metadata:
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: mysql-cluster-server-daemon
+  serviceName: mysql-cluster
   selector:
     matchLabels:
       app: fdbb0656-7ca5-11ee-9535-00155d91d86a
@@ -42,36 +42,41 @@ spec:
         app: fdbb0656-7ca5-11ee-9535-00155d91d86a
     spec:
       nodeSelector:
-        kubernetes.io/hostname: mp8
+        kubernetes.io/hostname: mp1
       restartPolicy: Always
+      hostname: cluster-server
+      hostAliases:
+      - ip: 127.0.0.1
+        hostnames:
+        - cluster-server-service.mysql-cluster.svc.kube.askug.net
 
-      initContainers:
-      # ----------------------------------------------------
-      - name: init-server
-        image: busybox:1.36
-        command: [ "sh", "-c" ]
-        args: [ "
-            echo \"$POD_IP cluster-server\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
-          " ]
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
+      # initContainers:
+      # # ----------------------------------------------------
+      # - name: init-server
+      #   image: busybox:1.36
+      #   command: [ "sh", "-c" ]
+      #   args: [ "
+      #       echo \"$POD_IP cluster-server\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
+      #     " ]
+      #   env:
+      #   - name: POD_IP
+      #     valueFrom:
+      #       fieldRef:
+      #         fieldPath: status.podIP
 
-        resources:
-          limits:
-            memory: 64Mi
-            cpu: 250m
-          requests:
-            memory: 32Mi
-            cpu: 100m
+      #   resources:
+      #     limits:
+      #       memory: 64Mi
+      #       cpu: 250m
+      #     requests:
+      #       memory: 32Mi
+      #       cpu: 100m
 
       containers:
       # ----------------------------------------------------
       - name: cluster-server
-        image: hub.askug.net/mysql-server-sb-11:0.0.1
-        args: [ "-c", "if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then /usr/sbin/ndbd; /usr/sbin/mysqld; else /usr/sbin/ndbd --ndbcluster; /usr/sbin/mysqld --initialize; fi" ]
+        image: hub.askug.net/mysql-server-sb-11:0.0.4
+        args: [ "-c", "if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then /usr/sbin/ndbd --daemon; /usr/sbin/mysqld; else /usr/sbin/ndbd --ndbcluster; /usr/sbin/mysqld --initialize; fi; tail -f /dev/null" ]
         # args: [ "-c", "tail -f /dev/null" ]
 
         ports:
@@ -82,24 +87,24 @@ spec:
           containerPort: 33060
           hostPort: 33060
 
-        startupProbe:
-          tcpSocket:
-            host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
-            port: 53
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        # startupProbe:
+        #   tcpSocket:
+        #     host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
+        #     port: 53
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 10
 
-        livenessProbe:
-          tcpSocket:
-            port: tcp3306
-          initialDelaySeconds: 40
-          periodSeconds: 10
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 10
 
-        readinessProbe:
-          tcpSocket:
-            port: tcp3306
-          initialDelaySeconds: 40
-          periodSeconds: 5
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 5
 
         volumeMounts:
         - mountPath: "/etc/mysql/my.cnf"
@@ -125,11 +130,10 @@ spec:
             memory: 1Gi
             cpu: "1"
 
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-        - 10.216.80.34
-        - 10.96.0.10
+      # dnsPolicy: "None"
+      # dnsConfig:
+      #   nameservers:
+      #   - 10.216.80.34
 
       volumes:
       - name: server-config
