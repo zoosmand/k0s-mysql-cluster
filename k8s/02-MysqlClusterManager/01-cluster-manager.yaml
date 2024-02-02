@@ -8,6 +8,7 @@ spec:
   selector:
     app: 0ddab094-7554-11ee-904c-b33e59e6adfc
   type: ClusterIP
+  clusterIP: None
   ports:
     - protocol: TCP
       name: "http-1186"
@@ -15,6 +16,62 @@ spec:
       targetPort: 1186
 
 ...
+
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: cluster-node-2-service
+#   namespace: mysql-cluster
+# spec:
+#   selector:
+#     app: 9fdf680e-7581-11ee-9999-33b8aaaa41b1
+#   type: ClusterIP
+#   clusterIP: None
+
+# ...
+
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: cluster-node-3-service
+#   namespace: mysql-cluster
+# spec:
+#   selector:
+#     app: 1d82738a-75c0-11ee-a527-4feca51b94e8
+#   type: ClusterIP
+#   clusterIP: None
+
+# ...
+
+
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: cluster-server-service
+#   namespace: mysql-cluster
+# spec:
+#   selector:
+#     app: fdbb0656-7ca5-11ee-9535-00155d91d86a
+#   type: ClusterIP
+#   clusterIP: None
+#   # type: LoadBalancer
+#   # loadBalancerIP: 10.216.80.36
+#   # ports:
+#   #   - protocol: TCP
+#   #     name: "tcp3306"
+#   #     port: 3306
+#   #     targetPort: 3306
+#   #   - protocol: TCP
+#   #     name: "tcp33060"
+#   #     port: 33060
+#   #     targetPort: 33060
+
+# ...
 
 # ---
 # apiVersion: v1
@@ -42,7 +99,7 @@ metadata:
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: mysql-cluster
+  serviceName: cluster-manager-service
   selector:
     matchLabels:
       app: 0ddab094-7554-11ee-904c-b33e59e6adfc
@@ -54,13 +111,12 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: mp8
       restartPolicy: Always
-      hostname: cluster-manager
-      # hostname: mysql-cluster-manager
-      # subdomain: mysql-cluster-manager-local-service
-      hostAliases:
-      - ip: 127.0.0.1
-        hostnames:
-        - cluster-manager-service.mysql-cluster.svc.kube.askug.net
+      # hostname: cluster-manager
+      # subdomain: cluster-manager-service
+      # hostAliases:
+      # - ip: 127.0.0.1
+      #   hostnames:
+      #   - cluster-manager-service.mysql-cluster.svc.kube.askug.net
 
       # initContainers:
       # # ----------------------------------------------------
@@ -68,14 +124,14 @@ spec:
       #   image: busybox:1.36
       #   command: [ "sh", "-c" ]
       #   args: [ "
-      #       tail -f /dev/null
+      #       sleep 10
       #       # echo \"$POD_IP cluster-manager\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
       #     " ]
-      #   env:
-      #   - name: POD_IP
-      #     valueFrom:
-      #       fieldRef:
-      #         fieldPath: status.podIP
+      #   # env:
+      #   # - name: POD_IP
+      #   #   valueFrom:
+      #   #     fieldRef:
+      #   #       fieldPath: status.podIP
 
       #   resources:
       #     limits:
@@ -91,12 +147,13 @@ spec:
       - name: cluster-manager
         image: hub.askug.net/mysql-cluster-manager-sb-11:0.0.1
         args: [ "-c", "
-          sleep 10;
-          /usr/sbin/ndb_mgmd
-            --config-file=/var/lib/mysql-cluster/config.ini
-            --daemon
-            --reload
-          ;
+          while true; do
+            /usr/sbin/ndb_mgmd
+              --config-file=/var/lib/mysql-cluster/config.ini
+              --nodaemon
+              --reload
+            ;
+          done;
           tail -f /dev/null
           " ]
 

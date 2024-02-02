@@ -8,7 +8,7 @@ immutable: true
 data:
   my.cnf: |+
     [mysql_cluster]
-    ndb-connectstring=cluster-manager-service.mysql-cluster.svc.kube.askug.net
+    ndb-connectstring=mysql-cluster-manager-0.cluster-manager-service.mysql-cluster.svc.kube.askug.net
 
     # [mysql]
     # datadir=/var/lib/mysql-data
@@ -25,7 +25,7 @@ immutable: true
 data:
   my.cnf: |+
     [mysql_cluster]
-    ndb-connectstring=cluster-manager-service.mysql-cluster.svc.kube.askug.net
+    ndb-connectstring=mysql-cluster-manager-0.cluster-manager-service.mysql-cluster.svc.kube.askug.net
 
     # [mysql]
     # datadir=/var/lib/mysql-data

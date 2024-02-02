@@ -7,8 +7,10 @@ metadata:
 spec:
   selector:
     app: fdbb0656-7ca5-11ee-9535-00155d91d86a
-  type: LoadBalancer
-  loadBalancerIP: 10.216.80.36
+  type: ClusterIP
+  clusterIP: None
+  # type: LoadBalancer
+  # loadBalancerIP: 10.216.80.36
   ports:
     - protocol: TCP
       name: "tcp3306"
@@ -32,7 +34,7 @@ metadata:
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: mysql-cluster
+  serviceName: cluster-server-service
   selector:
     matchLabels:
       app: fdbb0656-7ca5-11ee-9535-00155d91d86a
@@ -44,11 +46,12 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: mp1
       restartPolicy: Always
-      hostname: cluster-server
-      hostAliases:
-      - ip: 127.0.0.1
-        hostnames:
-        - cluster-server-service.mysql-cluster.svc.kube.askug.net
+      # hostname: cluster-server
+      # subdomain: cluster-server-service
+      # hostAliases:
+      # - ip: 127.0.0.1
+      #   hostnames:
+      #   - cluster-server-service.mysql-cluster.svc.kube.askug.net
 
       # initContainers:
       # # ----------------------------------------------------
@@ -56,13 +59,14 @@ spec:
       #   image: busybox:1.36
       #   command: [ "sh", "-c" ]
       #   args: [ "
-      #       echo \"$POD_IP cluster-server\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
+      #       sleep 10
+      #       # echo \"$POD_IP cluster-server\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
       #     " ]
-      #   env:
-      #   - name: POD_IP
-      #     valueFrom:
-      #       fieldRef:
-      #         fieldPath: status.podIP
+      #   # env:
+      #   # - name: POD_IP
+      #   #   valueFrom:
+      #   #     fieldRef:
+      #   #       fieldPath: status.podIP
 
       #   resources:
       #     limits:
@@ -76,7 +80,16 @@ spec:
       # ----------------------------------------------------
       - name: cluster-server
         image: hub.askug.net/mysql-server-sb-11:0.0.4
-        args: [ "-c", "if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then /usr/sbin/ndbd --daemon; /usr/sbin/mysqld; else /usr/sbin/ndbd --ndbcluster; /usr/sbin/mysqld --initialize; fi; tail -f /dev/null" ]
+        args: [ "-c", "
+          while true; do
+            if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then 
+              /usr/sbin/mysqld; 
+            else 
+              /usr/sbin/mysqld --initialize; 
+            fi; 
+          done;
+          tail -f /dev/null
+          " ]
         # args: [ "-c", "tail -f /dev/null" ]
 
         ports:
@@ -141,6 +154,6 @@ spec:
           name: mysql-cluster-server-config
       - name: mysql-data-volume
         persistentVolumeClaim:
-          claimName: mysql-cluster-server-cache
+          claimName: mysql-cluster-server-storage
 
 ...

@@ -8,7 +8,7 @@ spec:
   selector:
     app: 1d82738a-75c0-11ee-a527-4feca51b94e8
   type: ClusterIP
-  clusterIP: "None"
+  clusterIP: None
 
 ...
 
@@ -23,7 +23,7 @@ metadata:
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: mysql-cluster
+  serviceName: cluster-node-3-service
   selector:
     matchLabels:
       app: 1d82738a-75c0-11ee-a527-4feca51b94e8
@@ -35,11 +35,12 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: mp8
       restartPolicy: Always
-      hostname: cluster-node-3
-      hostAliases:
-      - ip: 127.0.0.1
-        hostnames:
-        - cluster-node-3-service.mysql-cluster.svc.kube.askug.net
+      # hostname: cluster-node-3
+      # subdomain: cluster-node-3-service
+      # hostAliases:
+      # - ip: 127.0.0.1
+      #   hostnames:
+      #   - cluster-node-3-service.mysql-cluster.svc.kube.askug.net
 
       # initContainers:
       # # ----------------------------------------------------
@@ -47,22 +48,32 @@ spec:
       #   image: busybox:1.36
       #   command: [ "sh", "-c" ]
       #   args: [ "
-      #       echo \"$POD_IP cluster-data-node-3\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
+      #       sleep 15
+      #       # echo \"$POD_IP cluster-data-node-3\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
       #     " ]
-      #   env:
-      #   - name: POD_IP
-      #     valueFrom:
-      #       fieldRef:
-      #         fieldPath: status.podIP
+      #   # env:
+      #   # - name: POD_IP
+      #   #   valueFrom:
+      #   #     fieldRef:
+      #   #       fieldPath: status.podIP
+      #   resources:
+      #     limits:
+      #       memory: 64Mi
+      #       cpu: 250m
+      #     requests:
+      #       memory: 32Mi
+      #       cpu: 100m
 
       containers:
       # ----------------------------------------------------
       - name: cluster-data-node-3
         image: hub.askug.net/mysql-cluster-data-node-sb-11:0.0.1
         args: [ "-c", "
-          /usr/sbin/ndbd
-            --nodaemon
-          ;
+          while true; do
+            /usr/sbin/ndbd
+              --nodaemon
+            ;
+          done;
           tail -f /dev/null
           " ]
 
