@@ -61,17 +61,17 @@ spec:
           containerPort: 1186
           hostPort: 1186
 
-        livenessProbe:
-          tcpSocket:
-            port: tcp1186
-          initialDelaySeconds: 15
-          periodSeconds: 50
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 50
 
-        readinessProbe:
-          tcpSocket:
-            port: tcp1186
-          initialDelaySeconds: 40
-          periodSeconds: 60
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 60
 
         volumeMounts:
         - mountPath: "/var/lib/mysql-cluster/config.ini"
