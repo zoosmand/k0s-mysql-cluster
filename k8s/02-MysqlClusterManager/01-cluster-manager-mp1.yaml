@@ -1,0 +1,99 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-manager-service-mp1
+  namespace: mysql-cluster
+spec:
+  selector:
+    app: 0ddab094-7554-11ee-904c-b33e59e6adfc
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - protocol: TCP
+      name: "http-1186"
+      port: 1186
+      targetPort: 1186
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: 0ddab094-7554-11ee-904c-b33e59e6adfc
+  name: mysql-cluster-manager-mp1
+  namespace: mysql-cluster
+spec:
+  replicas: 1
+  serviceName: cluster-manager-service-mp1
+  selector:
+    matchLabels:
+      app: 0ddab094-7554-11ee-904c-b33e59e6adfc
+  template:
+    metadata:
+      labels:
+        app: 0ddab094-7554-11ee-904c-b33e59e6adfc
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: mp1
+      restartPolicy: Always
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-manager
+        image: hub.askug.net/mysql-cluster-manager-sb-11:0.0.1
+        args: [ "-c", "
+          while true; do
+            /usr/sbin/ndb_mgmd
+              --config-file=/var/lib/mysql-cluster/config.ini
+              --nodaemon
+              --reload
+            ;
+          done;
+          tail -f /dev/null # for debug purpose
+          " ]
+
+        ports:
+        - name: tcp1186
+          containerPort: 1186
+          hostPort: 1186
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 50
+
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 60
+
+        volumeMounts:
+        - mountPath: "/var/lib/mysql-cluster/config.ini"
+          name: cluster-config
+          subPath: "config.ini"
+          readOnly: true
+
+        env:
+        - name: MYSQL_CLUSTER_MANAGER_VERSION
+          value: 8.1.0-1
+
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: "2"
+          requests:
+            memory: 1Gi
+            cpu: "1"
+
+      volumes:
+      - name: cluster-config
+        configMap:
+          name: mysql-cluster-manager-config
+
+...

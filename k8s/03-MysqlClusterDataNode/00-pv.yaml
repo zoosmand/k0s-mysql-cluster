@@ -5,6 +5,7 @@ metadata:
   name: mysql-data-node-storage-mp1
   labels:
     file-system: ext4
+    node-name: mp1
     physical-volume: lvm-thin-partition
     max-size: 20GiB
 spec:
@@ -14,9 +15,9 @@ spec:
   accessModes:
   - ReadWriteMany
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: mysql-20
+  storageClassName: mysql-data-node-mp1
   local:
-    path: /mnt/kube/mysql/node/20
+    path: /mnt/kube/mysql/node
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -35,6 +36,7 @@ metadata:
   name: mysql-data-node-storage-mp8
   labels:
     file-system: ext4
+    node-name: mp8
     physical-volume: lvm-partition
     max-size: 20GiB
 spec:
@@ -44,9 +46,9 @@ spec:
   accessModes:
   - ReadWriteMany
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: mysql-20
+  storageClassName: mysql-data-node-mp8
   local:
-    path: /mnt/kube/mysql/node/20
+    path: /mnt/kube/mysql/node
   nodeAffinity:
     required:
       nodeSelectorTerms:

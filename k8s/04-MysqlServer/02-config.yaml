@@ -15,7 +15,7 @@ data:
     max_connect_errors=10000
     
     [mysql_cluster]
-    ndb_connectstring=cluster-manager
-    ndb-mgmd-host=cluster-manager
+    ndb-connectstring=mysql-cluster-manager-mp1-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net,mysql-cluster-manager-mp1-0.cluster-manager-service-mp8.mysql-cluster.svc.kube.askug.net
+    ndb-mgmd-host=mysql-cluster-manager-mp1-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net,mysql-cluster-manager-mp8-0.cluster-manager-service-mp8.mysql-cluster.svc.kube.askug.net
 
 ...

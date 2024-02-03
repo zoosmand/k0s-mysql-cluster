@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-cluster-server-service
+  name: cluster-server-service-mp1
   namespace: mysql-cluster
 spec:
   selector:
@@ -28,11 +28,11 @@ kind: StatefulSet
 metadata:
   labels:
     app: fdbb0656-7ca5-11ee-9535-00155d91d86a
-  name: mysql-cluster-server
+  name: mysql-cluster-server-mp1
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: mysql-cluster-server-daemon
+  serviceName: cluster-server-service-mp1
   selector:
     matchLabels:
       app: fdbb0656-7ca5-11ee-9535-00155d91d86a
@@ -42,37 +42,23 @@ spec:
         app: fdbb0656-7ca5-11ee-9535-00155d91d86a
     spec:
       nodeSelector:
-        node-type: worker
+        kubernetes.io/hostname: mp1
       restartPolicy: Always
-
-      initContainers:
-      # ----------------------------------------------------
-      - name: init-server
-        image: busybox:1.36
-        command: [ "sh", "-c" ]
-        args: [ "
-            echo \"$POD_IP cluster-server\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
-          " ]
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-
-        resources:
-          limits:
-            memory: 64Mi
-            cpu: 250m
-          requests:
-            memory: 32Mi
-            cpu: 100m
 
       containers:
       # ----------------------------------------------------
       - name: cluster-server
-        image: hub.askug.net/mysql-server-sb-11:0.0.1
-        args: [ "-c", "if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then /usr/sbin/ndbd; /usr/sbin/mysqld; else /usr/sbin/ndbd --ndbcluster; /usr/sbin/mysqld --initialize; fi" ]
-        # args: [ "-c", "tail -f /dev/null" ]
+        image: hub.askug.net/mysql-server-sb-11:0.0.4
+        args: [ "-c", "
+          while true; do
+            if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then 
+              /usr/sbin/mysqld; 
+            else 
+              /usr/sbin/mysqld --initialize; 
+            fi; 
+          done;
+          tail -f /dev/null # for debug purpose
+          " ]
 
         ports:
         - name: tcp3306
@@ -82,24 +68,24 @@ spec:
           containerPort: 33060
           hostPort: 33060
 
-        startupProbe:
-          tcpSocket:
-            host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
-            port: 53
-          initialDelaySeconds: 5
-          periodSeconds: 10
+        # startupProbe:
+        #   tcpSocket:
+        #     host: mysql-cluster-manager-mp1-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net
+        #     port: 1186
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 15
 
-        livenessProbe:
-          tcpSocket:
-            port: tcp3306
-          initialDelaySeconds: 40
-          periodSeconds: 10
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
 
-        readinessProbe:
-          tcpSocket:
-            port: tcp3306
-          initialDelaySeconds: 40
-          periodSeconds: 5
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
 
         volumeMounts:
         - mountPath: "/etc/mysql/my.cnf"
@@ -125,17 +111,12 @@ spec:
             memory: 1Gi
             cpu: "1"
 
-      dnsPolicy: "None"
-      dnsConfig:
-        nameservers:
-        - 10.216.80.34
-
       volumes:
       - name: server-config
         configMap:
           name: mysql-cluster-server-config
       - name: mysql-data-volume
         persistentVolumeClaim:
-          claimName: mysql-cluster-server-cache
+          claimName: mysql-cluster-server-storage-mp1
 
 ...
