@@ -2,11 +2,11 @@
 
 <https://www.clusterdb.com/mysql-cluster/mysql-cluster-fault-tolerance-impact-of-deployment-decisions>
 
-~~~ mysql
+~~~ sql
 ALTER USER 'root'@'localhost' IDENTIFIED BY '***';
 ~~~
 
-~~~ mysql
+~~~ sql
 SHOW ENGINE NDB STATUS;
 ~~~
 
@@ -15,14 +15,14 @@ ndb_mgm -e show
 ~~~
 
 
-~~~ mysql
+~~~ sql
 CREATE DATABASE clustertest;
 --
 CREATE USER IF NOT EXISTS `clusteruser`@`%` IDENTIFIED BY '***';
 DROP USER `clusteruser`@`%`;
 ~~~
 
-~~~ mysql
+~~~ sql
 GRANT ALL PRIVILEGES ON `clustertest`.* TO `clusteruser`@`%`;
 GRANT NDB_STORED_USER ON *.* TO `clusteruser`@`%`;
 --
@@ -31,15 +31,30 @@ SHOW GRANTS FOR `clusteruser`@`%`;
 REVOKE ALL PRIVILEGES ON `clustertest`.* FROM `clusteruser`@`%`;
 ~~~
 
+~~~ sql
+CREATE TABLE clustertest.test_table (
+	uid INT auto_increment NOT NULL,
+	CONSTRAINT test_table_pk PRIMARY KEY (uid)
+)
+ENGINE=ndbcluster
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+~~~
 
-
-
+~~~ sql
 SHOW STATUS WHERE `variable_name` = 'Max_used_connections';
-show status where variable_name = 'threads_connected';
+~~~
 
-show processlist;
+~~~ sql
+SHOW STATUS WHERE variable_name = 'threads_connected';
+~~~
 
-select id,
+~~~ sql
+SHOW PROCESSLIST;
+~~~
+
+~~~ sql
+SELECT id,
        user,
        host,
        db,
@@ -47,13 +62,27 @@ select id,
        time,
        state,
        info
-from information_schema.processlist;
+FROM information_schema.processlist;
+~~~
 
-show session status;
+~~~ sql
+SHOW SESSION STATUS;
+~~~
 
-show global status;
+~~~ sql
+SHOW GLOBAL STATUS;
+~~~
 
+~~~ sql
 STATUS;
+~~~
 
-
-CREATE TABLE test_table (uid INT) ENGINE=NDBCLUSTER;
+~~~ sql
+CREATE TABLE clustertest.test_table (
+	uid INT auto_increment NOT NULL,
+	CONSTRAINT test_table_pk PRIMARY KEY (uid)
+)
+ENGINE=ndbcluster
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
+~~~
