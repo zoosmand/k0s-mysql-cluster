@@ -11,7 +11,6 @@ spec:
   dnsPolicy: ClusterFirst
   nodeSelector:
     kubernetes.io/hostname: mp8
-  # serviceAccountName: sb-11-monitoring-service-account
   containers:
 
   # ----------------------------------------------------
@@ -46,6 +45,7 @@ spec:
         cpu: 250m
 
 ...
+
 
 ---
 apiVersion: v1

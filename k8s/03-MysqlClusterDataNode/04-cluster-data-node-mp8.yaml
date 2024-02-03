@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cluster-node-3-service
+  name: cluster-node-service-mp8
   namespace: mysql-cluster
 spec:
   selector:
-    app: 1d82738a-75c0-11ee-a527-4feca51b94e8
+    app: b967cf84-c2a5-11ee-bfcf-bf4087638bc4
   type: ClusterIP
   clusterIP: None
 
@@ -18,55 +18,27 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   labels:
-    app: 1d82738a-75c0-11ee-a527-4feca51b94e8
-  name: mysql-cluster-data-node-3
+    app: b967cf84-c2a5-11ee-bfcf-bf4087638bc4
+  name: mysql-cluster-data-node-mp8
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: cluster-node-3-service
+  serviceName: cluster-node-service-mp8
   selector:
     matchLabels:
-      app: 1d82738a-75c0-11ee-a527-4feca51b94e8
+      app: b967cf84-c2a5-11ee-bfcf-bf4087638bc4
   template:
     metadata:
       labels:
-        app: 1d82738a-75c0-11ee-a527-4feca51b94e8
+        app: b967cf84-c2a5-11ee-bfcf-bf4087638bc4
     spec:
       nodeSelector:
         kubernetes.io/hostname: mp8
       restartPolicy: Always
-      # hostname: cluster-node-3
-      # subdomain: cluster-node-3-service
-      # hostAliases:
-      # - ip: 127.0.0.1
-      #   hostnames:
-      #   - cluster-node-3-service.mysql-cluster.svc.kube.askug.net
-
-      # initContainers:
-      # # ----------------------------------------------------
-      # - name: cluster-data-node-3-discovery
-      #   image: busybox:1.36
-      #   command: [ "sh", "-c" ]
-      #   args: [ "
-      #       sleep 15
-      #       # echo \"$POD_IP cluster-data-node-3\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
-      #     " ]
-      #   # env:
-      #   # - name: POD_IP
-      #   #   valueFrom:
-      #   #     fieldRef:
-      #   #       fieldPath: status.podIP
-      #   resources:
-      #     limits:
-      #       memory: 64Mi
-      #       cpu: 250m
-      #     requests:
-      #       memory: 32Mi
-      #       cpu: 100m
 
       containers:
       # ----------------------------------------------------
-      - name: cluster-data-node-3
+      - name: cluster-data-node-2
         image: hub.askug.net/mysql-cluster-data-node-sb-11:0.0.1
         args: [ "-c", "
           while true; do
@@ -74,7 +46,7 @@ spec:
               --nodaemon
             ;
           done;
-          tail -f /dev/null
+          tail -f /dev/null # for debug purpose
           " ]
 
         volumeMounts:
@@ -113,9 +85,9 @@ spec:
       volumes:
       - name: data-node-config
         configMap:
-          name: mysql-cluster-data-node-3-config
+          name: mysql-cluster-node-config
       - name: mysql-data-volume
         persistentVolumeClaim:
-          claimName: mysql-cluster-data-node-3-cache
+          claimName: mysql-cluster-data-node-mp8
 
 ...

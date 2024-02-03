@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-cluster-data-node-2-cache
+  name: mysql-cluster-data-node-mp1
   namespace: mysql-cluster
   labels:
     maxSize: 20Gi
 spec:
-  storageClassName: mysql-data-mp1
+  storageClassName: cluster-data-node-mp1
   accessModes:
     - ReadWriteMany
   resources:
@@ -20,12 +20,12 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-cluster-data-node-3-cache
+  name: mysql-cluster-data-node-mp8
   namespace: mysql-cluster
   labels:
     maxSize: 20Gi
 spec:
-  storageClassName: mysql-data-mp8
+  storageClassName: mysql-data-node-mp8
   accessModes:
     - ReadWriteMany
   resources:

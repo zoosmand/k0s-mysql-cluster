@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: cluster-node-2-service
+  name: cluster-node-service-mp1
   namespace: mysql-cluster
 spec:
   selector:
@@ -19,11 +19,11 @@ kind: StatefulSet
 metadata:
   labels:
     app: 9fdf680e-7581-11ee-9999-33b8aaaa41b1
-  name: mysql-cluster-data-node-2
+  name: mysql-cluster-data-node-mp1
   namespace: mysql-cluster
 spec:
   replicas: 1
-  serviceName: cluster-node-2-service
+  serviceName: cluster-node-service-mp1
   selector:
     matchLabels:
       app: 9fdf680e-7581-11ee-9999-33b8aaaa41b1
@@ -35,34 +35,6 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: mp1
       restartPolicy: Always
-      # hostname: cluster-node-2
-      # subdomain: cluster-node-2-service
-      # hostAliases:
-      # - ip: 127.0.0.1
-      #   hostnames:
-      #   - cluster-node-2-service.mysql-cluster.svc.kube.askug.net
-
-      # initContainers:
-      # # ----------------------------------------------------
-      # - name: cluster-data-node-2-discovery
-      #   image: busybox:1.36
-      #   command: [ "sh", "-c" ]
-      #   args: [ "
-      #       sleep 15
-      #       # echo \"$POD_IP cluster-data-node-2\" | nc -w 1 mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net 5333
-      #     " ]
-      #   # env:
-      #   # - name: POD_IP
-      #   #   valueFrom:
-      #   #     fieldRef:
-      #   #       fieldPath: status.podIP
-      #   resources:
-      #     limits:
-      #       memory: 64Mi
-      #       cpu: 250m
-      #     requests:
-      #       memory: 32Mi
-      #       cpu: 100m
 
       containers:
       # ----------------------------------------------------
@@ -74,7 +46,7 @@ spec:
               --nodaemon
             ;
           done;
-          tail -f /dev/null
+          tail -f /dev/null # for debug purpose
           " ]
 
         volumeMounts:
@@ -113,9 +85,9 @@ spec:
       volumes:
       - name: data-node-config
         configMap:
-          name: mysql-cluster-data-node-2-config
+          name: mysql-cluster-node-config
       - name: mysql-data-volume
         persistentVolumeClaim:
-          claimName: mysql-cluster-data-node-2-cache
+          claimName: mysql-cluster-data-node-mp1
 
 ...

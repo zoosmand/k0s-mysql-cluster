@@ -1,0 +1,106 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-manager-service-mp8
+  namespace: mysql-cluster
+spec:
+  selector:
+    app: a3e6f5dc-c27c-11ee-8c95-5fdd3c08c775
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - protocol: TCP
+      name: "http-1186"
+      port: 1186
+      targetPort: 1186
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: a3e6f5dc-c27c-11ee-8c95-5fdd3c08c775
+  name: mysql-cluster-manager-mp8
+  namespace: mysql-cluster
+spec:
+  replicas: 1
+  serviceName: cluster-manager-service-mp8
+  selector:
+    matchLabels:
+      app: a3e6f5dc-c27c-11ee-8c95-5fdd3c08c775
+  template:
+    metadata:
+      labels:
+        app: a3e6f5dc-c27c-11ee-8c95-5fdd3c08c775
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: mp8
+      restartPolicy: Always
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-manager
+        image: hub.askug.net/mysql-cluster-manager-sb-11:0.0.1
+        args: [ "-c", "
+          while true; do
+            /usr/sbin/ndb_mgmd
+              --config-file=/var/lib/mysql-cluster/config.ini
+              --nodaemon
+              --reload
+            ;
+          done;
+          tail -f /dev/null # for debug purpose
+          " ]
+
+        ports:
+        - name: tcp1186
+          containerPort: 1186
+          hostPort: 1186
+
+        # startupProbe:
+        #   tcpSocket:
+        #     host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
+        #     port: 53
+        #   initialDelaySeconds: 5
+        #   periodSeconds: 10
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 10
+
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 5
+
+        volumeMounts:
+        - mountPath: "/var/lib/mysql-cluster/config.ini"
+          name: cluster-config
+          subPath: "config.ini"
+          readOnly: true
+
+        env:
+        - name: MYSQL_CLUSTER_MANAGER_VERSION
+          value: 8.1.0-1
+
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: "2"
+          requests:
+            memory: 1Gi
+            cpu: "1"
+
+      volumes:
+      - name: cluster-config
+        configMap:
+          name: mysql-cluster-manager-config
+
+...

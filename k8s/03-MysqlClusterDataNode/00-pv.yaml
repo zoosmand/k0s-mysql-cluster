@@ -15,9 +15,9 @@ spec:
   accessModes:
   - ReadWriteMany
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: mysql-data-mp1
+  storageClassName: mysql-data-node-mp1
   local:
-    path: /mnt/kube/mysql/node/20
+    path: /mnt/kube/mysql/node
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -46,9 +46,9 @@ spec:
   accessModes:
   - ReadWriteMany
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: mysql-data-mp8
+  storageClassName: mysql-data-node-mp8
   local:
-    path: /mnt/kube/mysql/node/20
+    path: /mnt/kube/mysql/node
   nodeAffinity:
     required:
       nodeSelectorTerms:
