@@ -7,7 +7,7 @@ metadata:
   labels:
     maxSize: 20Gi
 spec:
-  storageClassName: cluster-data-node-mp1
+  storageClassName: mysql-data-node-mp1
   accessModes:
     - ReadWriteMany
   resources:
@@ -15,6 +15,7 @@ spec:
       storage: 20Gi
 
 ...
+
 
 ---
 apiVersion: v1

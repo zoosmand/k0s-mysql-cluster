@@ -14,20 +14,3 @@ data:
     # datadir=/var/lib/mysql-data
 
 ...
-
-# ---
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: mysql-cluster-data-node-3-config
-#   namespace: mysql-cluster
-# immutable: true
-# data:
-#   my.cnf: |+
-#     [mysql_cluster]
-#     ndb-connectstring=mysql-cluster-manager-0.cluster-manager-service.mysql-cluster.svc.kube.askug.net
-
-#     # [mysql]
-#     # datadir=/var/lib/mysql-data
-
-# ...

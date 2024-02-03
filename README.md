@@ -1,7 +1,9 @@
 # Kubernetes Mysql NDB Cluster (K0s)
 
+<https://www.clusterdb.com/mysql-cluster/mysql-cluster-fault-tolerance-impact-of-deployment-decisions>
+
 ~~~ mysql
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyNewPass';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '***';
 ~~~
 
 ~~~ mysql
@@ -16,13 +18,17 @@ ndb_mgm -e show
 ~~~ mysql
 CREATE DATABASE clustertest;
 --
-CREATE USER IF NOT EXISTS `clusτeruser`@`%` IDENTIFIED BY '***';
-DROP USER `cluseruser`@`%`;
+CREATE USER IF NOT EXISTS `clusteruser`@`%` IDENTIFIED BY '***';
+DROP USER `clusteruser`@`%`;
 ~~~
 
 ~~~ mysql
-GRANT ALL ON `clustertest`.`*` TO `clusτeruser`@`%`;
-REVOKE ALL ON `clustertest`.`*` FROM `clusτeruser`@`%`;
+GRANT ALL PRIVILEGES ON `clustertest`.* TO `clusteruser`@`%`;
+GRANT NDB_STORED_USER ON *.* TO `clusteruser`@`%`;
+--
+SHOW GRANTS FOR `clusteruser`@`%`;
+--
+REVOKE ALL PRIVILEGES ON `clustertest`.* FROM `clusteruser`@`%`;
 ~~~
 
 
@@ -48,3 +54,6 @@ show session status;
 show global status;
 
 STATUS;
+
+
+CREATE TABLE test_table (uid INT) ENGINE=NDBCLUSTER;

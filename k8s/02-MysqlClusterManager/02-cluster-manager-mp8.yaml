@@ -61,24 +61,17 @@ spec:
           containerPort: 1186
           hostPort: 1186
 
-        # startupProbe:
-        #   tcpSocket:
-        #     host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
-        #     port: 53
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: tcp1186
+          initialDelaySeconds: 15
+          periodSeconds: 50
 
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: tcp1186
-        #   initialDelaySeconds: 40
-        #   periodSeconds: 10
-
-        # readinessProbe:
-        #   tcpSocket:
-        #     port: tcp1186
-        #   initialDelaySeconds: 40
-        #   periodSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: tcp1186
+          initialDelaySeconds: 40
+          periodSeconds: 60
 
         volumeMounts:
         - mountPath: "/var/lib/mysql-cluster/config.ini"

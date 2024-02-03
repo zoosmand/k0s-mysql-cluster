@@ -37,7 +37,7 @@ metadata:
   name: mysql-cluster-server-storage-mp8
   labels:
     file-system: ext4
-    node-name: mp1
+    node-name: mp8
     physical-volume: lvm-partition
     max-size: 20GiB
 spec:

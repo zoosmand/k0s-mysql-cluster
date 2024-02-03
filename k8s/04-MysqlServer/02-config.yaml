@@ -16,7 +16,6 @@ data:
     
     [mysql_cluster]
     ndb-connectstring=mysql-cluster-manager-mp1-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net,mysql-cluster-manager-mp1-0.cluster-manager-service-mp8.mysql-cluster.svc.kube.askug.net
-    ndb-mgmd-host=mysql-cluster-manager-mp8-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net,mysql-cluster-manager-mp8-0.cluster-manager-service-mp8.mysql-cluster.svc.kube.askug.net
-    
+    ndb-mgmd-host=mysql-cluster-manager-mp1-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net,mysql-cluster-manager-mp8-0.cluster-manager-service-mp8.mysql-cluster.svc.kube.askug.net
 
 ...

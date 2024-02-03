@@ -7,8 +7,6 @@ metadata:
 spec:
   selector:
     app: fdbb0656-7ca5-11ee-9535-00155d91d86a
-  # type: ClusterIP
-  # clusterIP: None
   type: LoadBalancer
   loadBalancerIP: 10.216.80.36
   ports:
@@ -61,7 +59,6 @@ spec:
           done;
           tail -f /dev/null # for debug purpose
           " ]
-        # args: [ "-c", "tail -f /dev/null" ]
 
         ports:
         - name: tcp3306
@@ -71,24 +68,24 @@ spec:
           containerPort: 33060
           hostPort: 33060
 
-        # startupProbe:
-        #   tcpSocket:
-        #     host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
-        #     port: 53
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 10
+        startupProbe:
+          tcpSocket:
+            host: mysql-cluster-manager-mp1-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net
+            port: 1186
+          initialDelaySeconds: 15
+          periodSeconds: 35
 
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: tcp3306
-        #   initialDelaySeconds: 40
-        #   periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: tcp3306
+          initialDelaySeconds: 40
+          periodSeconds: 60
 
-        # readinessProbe:
-        #   tcpSocket:
-        #     port: tcp3306
-        #   initialDelaySeconds: 40
-        #   periodSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: tcp3306
+          initialDelaySeconds: 40
+          periodSeconds: 25
 
         volumeMounts:
         - mountPath: "/etc/mysql/my.cnf"

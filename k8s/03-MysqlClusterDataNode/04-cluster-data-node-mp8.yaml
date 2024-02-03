@@ -70,17 +70,12 @@ spec:
             memory: 2Gi
             cpu: "2"
 
-        # startupProbe:
-        #   tcpSocket:
-        #     host: mysql-cluster-discovery-srv-service.mysql-cluster.svc.kube.askug.net
-        #     port: 53
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 10
-
-      # dnsPolicy: "None"
-      # dnsConfig:
-      #   nameservers:
-      #   - 10.216.80.34
+        startupProbe:
+          tcpSocket:
+            host: mysql-cluster-manager-mp8-0.cluster-manager-service-mp8.mysql-cluster.svc.kube.askug.net
+            port: 1186
+          initialDelaySeconds: 15
+          periodSeconds: 35
 
       volumes:
       - name: data-node-config
