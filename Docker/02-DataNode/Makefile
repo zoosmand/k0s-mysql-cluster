@@ -3,7 +3,8 @@
 SHELL := /usr/bin/bash
 VERSION := $$(cat ../.version)
 CPU_ARCH := $$(dpkg --print-architecture)
-SERVICE := mysql-ndb-cluster-manager
+SERVICE := mysql-ndb-data-node
+
 
 
 .PHONY: all
@@ -34,7 +35,9 @@ build:
 	DST_PATH=./src; \
 	SRC_PATH=~/tmp/mysql-cluster-$$SOURCE_VERSION-${CPU_ARCH}; \
 	mkdir -p $$DST_PATH; \
-	install -D -m 0755 $$SRC_PATH/bin/ndb_mgmd $$DST_PATH/sbin/ndb_mgmd; \
+	for item in ndbd ndbmtd; do \
+		install -D -m 0755 $$SRC_PATH/bin/$$item $$DST_PATH/sbin/$$item; \
+	done; \
 	docker buildx build --no-cache -t $$REGISTRY/$$PROJECT-$(SERVICE):${VERSION} . > .log 2>&1
 
 
