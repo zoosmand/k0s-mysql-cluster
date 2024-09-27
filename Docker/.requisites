@@ -1,0 +1,4 @@
+REGISTRY=hub.intraclear.com
+SERVICE=mysql-ndb-cluster-manager
+PROJECT=mysql-cluster
+SOURCE_VERSIOIN=8.4.2
