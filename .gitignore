@@ -10,3 +10,6 @@ private_key.json
 *secrets.yaml
 .log
 *.log
+
+# source directories
+src

@@ -23,7 +23,7 @@ build:
 .PHONY: push
 push:
 	@ source ../.requisites; \
-	# docker push $$REGISTRY/$$PROJECT-$$SERVICE:${VERSION}
+	docker push $$REGISTRY/$$PROJECT-$$SERVICE:${VERSION}
 
 
 .PHONY: cleanup
