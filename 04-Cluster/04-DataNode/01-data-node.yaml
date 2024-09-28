@@ -17,10 +17,10 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  labels:
-    uid: 2d032808-7db3-11ef-a327-83cea4adb897
   name: ndb-cluster-data-node
   namespace: ndb-cluster
+  labels:
+    uid: 2d032808-7db3-11ef-a327-83cea4adb897
 spec:
   replicas: 2
   serviceName: ndb-cluster-data-node-service
