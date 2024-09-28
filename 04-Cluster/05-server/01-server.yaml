@@ -45,13 +45,28 @@ spec:
       restartPolicy: Always
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
+          # requiredDuringSchedulingIgnoredDuringExecution:
+          #   nodeSelectorTerms:
+          #   - matchExpressions:
+          #     - key: ndbDataType
+          #       operator: In
+          #       values:
+          #       - ndb.node
+          #       - ndb.server
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 10
+            preference:
+              matchExpressions:
               - key: ndbDataType
                 operator: In
                 values:
                 - ndb.node
+          - weight: 90
+            preference:
+              matchExpressions:
+              - key: ndbDataType
+                operator: In
+                values:
                 - ndb.server
 
       containers:
