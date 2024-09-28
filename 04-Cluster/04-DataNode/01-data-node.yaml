@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndb-cluster-data-node-service
+  namespace: ndb-cluster
+spec:
+  selector:
+    uid: 2d032808-7db3-11ef-a327-83cea4adb897
+  type: ClusterIP
+  clusterIP: None
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    uid: 2d032808-7db3-11ef-a327-83cea4adb897
+  name: ndb-cluster-data-node
+  namespace: ndb-cluster
+spec:
+  replicas: 2
+  serviceName: ndb-cluster-data-node-service
+  selector:
+    matchLabels:
+      uid: 2d032808-7db3-11ef-a327-83cea4adb897
+  template:
+    metadata:
+      labels:
+        uid: 2d032808-7db3-11ef-a327-83cea4adb897
+
+    spec:
+      restartPolicy: Always
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ndbDataType
+                operator: In
+                values:
+                - ndb.node
+                - ndb.server
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-data-node
+        image: hub.askug.net/mysql-cluster-mysql-ndb-data-node:0.0.2-beta2
+        args: []
+
+        volumeMounts:
+        - mountPath: "/etc/my.cnf"
+          name: data-node-config
+          subPath: "my.cnf"
+          readOnly: true
+        - mountPath: "/var/lib/mysql/data"
+          name: data-node-storage
+          subPath: "node"
+
+        env:
+        - name: MYSQL_CLUSTER_DATA_NODE_VERSION
+          value: 8.4.2-1
+
+        # resources:
+        #   limits:
+        #     memory: 4Gi
+        #     cpu: "4"
+        #   requests:
+        #     memory: 2Gi
+        #     cpu: "2"
+
+        # startupProbe:
+        #   tcpSocket:
+        #     host: ndb-cluster-manager-mp1-0.cluster-manager-service-mp1.ndb-cluster.svc.kube.askug.net
+        #     port: 1186
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 35
+
+      volumes:
+      - name: data-node-config
+        configMap:
+          name: ndb-cluster-data-node-config
+      - name: data-node-storage
+        persistentVolumeClaim:
+          claimName: ndb-cluster-storage
+
+...

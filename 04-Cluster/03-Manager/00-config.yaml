@@ -21,12 +21,12 @@ data:
     datadir=/var/lib/ndb-cluster
 
     [ndbd]
-    hostname=ndb-cluster-data-node-0.ndb-cluster-node-service.ndb-cluster.svc.kube.askug.net
+    hostname=ndb-cluster-data-node-0.ndb-cluster-data-node-service.ndb-cluster.svc.kube.askug.net
     NodeId=3
     datadir=/var/lib/mysql/data
 
     [ndbd]
-    hostname=ndb-cluster-data-node-1.ndb-cluster-node-service.ndb-cluster.svc.kube.askug.net
+    hostname=ndb-cluster-data-node-1.ndb-cluster-data-node-service.ndb-cluster.svc.kube.askug.net
     NodeId=4
     datadir=/var/lib/mysql/data
 

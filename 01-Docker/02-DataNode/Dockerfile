@@ -36,7 +36,7 @@ RUN \
 
 
 USER mysql
-WORKDIR /var/lib/mysql/data
+WORKDIR /var/lib/mysql
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
