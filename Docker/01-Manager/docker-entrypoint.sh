@@ -19,6 +19,10 @@ if [[ $1 == "ndb_mgmd" && -f $CONFIG ]]; then
     done
 fi
 
+if [[ $1 == "kill" ]]; then
+    kill -9 $(pidof ndb_mgmd) && echo "Force exit." && exit -1
+fi
+
 cat <<EOM
 
 --- Caution! ---

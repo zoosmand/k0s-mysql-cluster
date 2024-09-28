@@ -29,22 +29,24 @@ RUN \
     apt-get clean; \
     apt-get -yf autoremove; \
 	rm -rf /var/lib/apt/lists/*
-
-RUN \
-	set -eux; \
-    groupadd --system mysql; \
-    useradd -s /sbin/nologin --system -g mysql mysql
-
-
+    
 ENV LD_LIBRARY_PATH /usr/local/lib:/usr/lib:/usr/lib/mysql/private:/usr/lib/mysql
 
 COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/
 COPY ./src/ /usr/
 
+RUN \
+	set -eux; \
+    groupadd --system --gid=802 mysql; \
+    useradd --system --shell /sbin/nologin --home-dir=/var/lib/mysql --uid=802 --gid=mysql mysql; \
+    mkdir -p /var/run/mysqld; \
+    chown mysql:mysql /var/run/mysqld
+
+    
 USER mysql
 WORKDIR /var/lib/mysql
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-EXPOSE 3306
+EXPOSE 3306 33060
 CMD ["mysqld"]

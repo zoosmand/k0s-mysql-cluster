@@ -24,10 +24,14 @@ if [[ $1 == "mysqld" && -f $CONFIG ]]; then
     done
 fi
 
+if [[ $1 == "kill" ]]; then
+    kill -9 $(pidof mysqld) && echo "Force exit." && exit -1
+fi
+
 cat <<EOM
 
 --- Caution! ---
-The MySQL NDB Server stopped after 10 attempts or due to wrong arguments.
+The MySQL NDB Cluster Server stopped after 10 attempts or due to wrong arguments.
 
 If you did not use health checks or readiness probes, you may want to investigate the pod or container.
 Currently, the runtime is stuck on the command "tail -f /dev/null."

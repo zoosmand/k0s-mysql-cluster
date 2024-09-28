@@ -22,18 +22,20 @@ RUN \
     apt-get -yf autoremove; \
 	rm -rf /var/lib/apt/lists/*
 
+COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/
+COPY ./src/ /usr/
+    
 RUN \
 	set -eux; \
-    groupadd --system mysql; \
-    useradd -s /sbin/nologin --system -g mysql mysql; \
+    groupadd --system --gid=802 mysql; \
+    useradd --system --shell /sbin/nologin --home-dir=/var/lib/mysql --uid=802 --gid=mysql mysql; \
+    mkdir -p /var/lib/mysql; \
     mkdir -p /var/lib/mysql-cluster; \
     mkdir -p /usr/mysql-cluster; \
+    chown mysql:mysql /var/lib/mysql; \
     chown mysql:mysql /var/lib/mysql-cluster; \
     chown mysql:mysql /usr/mysql-cluster
 
-
-COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/
-COPY ./src/ /usr/
 
 USER mysql
 WORKDIR /var/lib/mysql-cluster
