@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgresql-cluster-testing-sa
+  namespace: postgresql-cluster
+automountServiceAccountToken: true
+
+...
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-cluster-testing-pod-service
+  namespace: postgresql-cluster
+spec:
+  selector:
+    uid: 0d0d36a4-7987-11ef-9c9a-00155d052bda
+  type: LoadBalancer
+  loadBalancerIP: 172.18.172.11
+  ports:
+  - protocol: TCP
+    name: tcp-22
+    port: 22
+    targetPort: 22
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: postgresql-cluster
+  name: postgresql-cluster-testing-depl
+  labels:
+    uid: 0d0d36a4-7987-11ef-9c9a-00155d052bda
+spec:
+  replicas: 2
+  serviceName: postgresql-cluster-testing-pod-service
+  selector:
+    matchLabels:
+      uid: 0d0d36a4-7987-11ef-9c9a-00155d052bda
+  template:
+    metadata:
+      labels:
+        uid: 0d0d36a4-7987-11ef-9c9a-00155d052bda
+
+    spec:
+      restartPolicy: Always
+      nodeSelector:
+        nodeType: worker
+        kubernetes.io/os: linux
+      serviceAccountName: postgresql-cluster-testing-sa
+
+      volumes:
+      - name: testing-volume
+        persistentVolumeClaim:
+          claimName: postgres-cluster-storage
+
+      containers:
+      # ----------------------------------------------------
+      - name: testing-pod
+        image: alpine:3.20
+        command: [ "sh", "-c", "echo \"Install OpenSSH\";
+          apk add openssh-server curl netcat-openbsd;
+          ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -q -N \"\";
+          sed -i \"s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g\" /etc/ssh/sshd_config;
+          echo \"root:123456\" | chpasswd;
+          /usr/sbin/sshd -D -e -ddd
+          "
+        ]
+
+        volumeMounts:
+        - mountPath: "/mnt/tmp"
+          name: testing-volume
+          readOnly: false
+
+        ports:
+        - containerPort: 22
+          name: tcp22
+
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 150m
+          requests:
+            memory: 128Mi
+            cpu: 75m
+
+...
+

@@ -27,7 +27,7 @@ RUN \
 COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/
 COPY ./src/ /usr/
     
-    RUN \
+RUN \
 	set -eux; \
     groupadd --system --gid=802 mysql; \
     useradd --system --shell /sbin/nologin --home-dir=/var/lib/mysql --uid=802 --gid=mysql mysql; \

@@ -30,7 +30,7 @@ RUN \
     apt-get -yf autoremove; \
 	rm -rf /var/lib/apt/lists/*
     
-ENV LD_LIBRARY_PATH /usr/local/lib:/usr/lib:/usr/lib/mysql/private:/usr/lib/mysql
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/usr/lib/mysql/private:/usr/lib/mysql
 
 COPY --chmod=0755 docker-entrypoint.sh /usr/local/bin/
 COPY ./src/ /usr/
