@@ -14,7 +14,7 @@ spec:
   volumeMode: Filesystem
   accessModes:
   - ReadWriteMany
-  persistentVolumeReclaimPolicy: Delete
+  persistentVolumeReclaimPolicy: Retain
   storageClassName: mysql-data-node-mp1
   local:
     path: /mnt/kube/mysql/node
@@ -45,7 +45,7 @@ spec:
   volumeMode: Filesystem
   accessModes:
   - ReadWriteMany
-  persistentVolumeReclaimPolicy: Delete
+  persistentVolumeReclaimPolicy: Retain
   storageClassName: mysql-data-node-mp8
   local:
     path: /mnt/kube/mysql/node

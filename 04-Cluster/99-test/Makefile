@@ -19,7 +19,7 @@ apply_pod:
 	# ---
 	$(MAKE) -f ../common.mk apply
 	@ printf "\n\t--- Deploly testing pod ---\n\n";
-	kubectl apply -f ./00-testing-pod.yaml
+	kubectl apply -f ./01-testing-pod.yaml
 
 
 .PHONY: delete_pod
@@ -27,7 +27,7 @@ delete_pod:
 	# ---
 	$(MAKE) -f ../common.mk delete
 	@ printf "\n\t--- Delete testing pod ---\n\n";
-	kubectl delete -f ./00-testing-pod.yaml
+	kubectl delete -f ./01-testing-pod.yaml
 
 # ----------------------------------------------------------------
 

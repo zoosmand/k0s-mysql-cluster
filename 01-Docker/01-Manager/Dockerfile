@@ -30,15 +30,13 @@ RUN \
     groupadd --system --gid=802 mysql; \
     useradd --system --shell /sbin/nologin --home-dir=/var/lib/mysql --uid=802 --gid=mysql mysql; \
     mkdir -p /var/lib/mysql; \
-    mkdir -p /var/lib/mysql-cluster; \
-    mkdir -p /usr/mysql-cluster; \
+    mkdir -p /var/lib/ndb-cluster; \
     chown mysql:mysql /var/lib/mysql; \
-    chown mysql:mysql /var/lib/mysql-cluster; \
-    chown mysql:mysql /usr/mysql-cluster
+    chown mysql:mysql /var/lib/ndb-cluster
 
 
 USER mysql
-WORKDIR /var/lib/mysql-cluster
+WORKDIR /var/lib/mysql
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 

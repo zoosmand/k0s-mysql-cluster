@@ -25,11 +25,6 @@ spec:
     kubernetes.io/hostname: mp1
   serviceAccountName: ndb-cluster-testing-pod-sa
 
-  volumes:
-  - name: testing-volume
-    persistentVolumeClaim:
-      claimName: ndb-cluster-storage
-
   containers:
   # ----------------------------------------------------
   - name: testing-pod
@@ -42,11 +37,6 @@ spec:
       /usr/sbin/sshd -D -e -ddd
       "
     ]
-
-    volumeMounts:
-    - mountPath: "/mnt/tmp"
-      name: testing-volume
-      readOnly: false
 
     ports:
     - containerPort: 22

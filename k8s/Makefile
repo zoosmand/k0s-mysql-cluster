@@ -6,7 +6,7 @@ cleanup: delete
 
 apply:
 	# kubectl apply -f ./00-namespace.yaml
-	$(MAKE) -C ./00-requisites
+	# $(MAKE) -C ./00-requisites
 	$(MAKE) -C ./02-MysqlClusterManager
 	$(MAKE) -C ./03-MysqlClusterDataNode
 	$(MAKE) -C ./04-MysqlServer
