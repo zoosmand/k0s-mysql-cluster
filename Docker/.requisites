@@ -1,0 +1,3 @@
+REGISTRY=hub.intraclear.com
+PROJECT=mysql-cluster
+SOURCE_VERSION=8.4.2
