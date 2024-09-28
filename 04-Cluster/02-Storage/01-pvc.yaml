@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ndb-cluster-storage
+  namespace: ndb-cluster
+spec:
+  storageClassName: ndb-cluster-cache
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+...

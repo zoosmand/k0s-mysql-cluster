@@ -5,7 +5,7 @@ LABEL build_date="2024-09-27"
 LABEL project="mysql-ndb-cluster"
 LABEL app_name="mysql-cluster-manager"
 LABEL app_version="0.0.2"
-LABEL name="MySQL NDB Cluster Manager"
+LABEL name="MySQL NDB Cluster Data Node"
 
 ARG CPU_ARCH=amd64
 ARG BUILD_VERSION=0.0.2
@@ -14,7 +14,9 @@ RUN \
 	set -eux; \
 	apt-get update -y; \
 	apt-get install -y --no-install-recommends \
+		wget \
         ca-certificates \
+        libclass-methodmaker-perl \
         libncurses6 \
         libncurses-dev \
 		; \
@@ -29,18 +31,14 @@ RUN \
 	set -eux; \
     groupadd --system --gid=802 mysql; \
     useradd --system --shell /sbin/nologin --home-dir=/var/lib/mysql --uid=802 --gid=mysql mysql; \
-    mkdir -p /var/lib/mysql; \
-    mkdir -p /var/lib/mysql-cluster; \
-    mkdir -p /usr/mysql-cluster; \
-    chown mysql:mysql /var/lib/mysql; \
-    chown mysql:mysql /var/lib/mysql-cluster; \
-    chown mysql:mysql /usr/mysql-cluster
+    mkdir -p /var/lib/mysql/data; \
+    chown -R mysql:mysql /var/lib/mysql
 
 
 USER mysql
-WORKDIR /var/lib/mysql-cluster
+WORKDIR /var/lib/mysql
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-EXPOSE 1186
-CMD ["ndb_mgmd"]
+CMD ["ndbd"]
+
