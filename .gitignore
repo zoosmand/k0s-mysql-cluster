@@ -20,3 +20,5 @@ log
 
 # database directory
 data
+
+.env
