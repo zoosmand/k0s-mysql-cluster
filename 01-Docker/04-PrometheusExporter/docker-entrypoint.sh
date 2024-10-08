@@ -6,9 +6,9 @@ THRESHOLD=9
 CNT=0
 
 # -------------------------------------------------------------------------------------------
-if [[ "${#FUNCNAME[@]}" -ge 2 && "$1" == "mysqld_exporter" &&  ]]; then
+if [[ "$#" -ge 2 && "$1" == "mysqld_exporter" ]]; then
     while true; do
-        /usr/local/bin/$1 \
+        /usr/local/bin/mysqld_exporter \
             --mysqld.address=$2 \
             --mysqld.username=mysqld_exporter \
             --tls.insecure-skip-verify

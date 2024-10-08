@@ -16,7 +16,6 @@ RUN \
     apt-get update -y; \
     apt-get install -y --no-install-recommends \
         ca-certificates \
-        vim: \
         ; \
     apt-get clean; \
     apt-get -yf autoremove; \
@@ -32,22 +31,25 @@ COPY ./src/exporter.tgz .
 
 RUN \
     set -eux; \
-    tar xzvf exporter.tgz; \
-    find . -name 'mysqld_exporter' | xargs -I '{}' mv '{}' /usr/local/bin; \
+    DST=./exporter; \
+    mkdir $DST; \
+    tar xzvf exporter.tgz -C $DST; \
+    find $DST -name 'mysqld_exporter' | xargs -I '{}' mv '{}' /usr/local/bin; \
     chown mysqld_exporter:mysqld_exporter /usr/local/bin/mysqld_exporter; \
     chmod +x /usr/local/bin/mysqld_exporter; \
-    rm -rf exporter
+    rm -rf $DST
 
 USER mysqld_exporter
 WORKDIR /var/lib/mysqld_exporter
 
 EXPOSE 9104
+STOPSIGNAL SIGUSR1
 # HEALTHCHECK --interval=60s --timeout=10s --start-period=10s CMD (curl --fail http://localhost:9094/-/healthy) || exit 1
 
-ENTRYPOINT ["tail"]
+# ENTRYPOINT ["tail"]
 
-CMD ["-f", "/dev/null"]
-# ENTRYPOINT ["docker-entrypoint.sh"]
+# CMD ["-f", "/dev/null"]
+ENTRYPOINT ["docker-entrypoint.sh"]
 
-# CMD ["mysqld_exporter"]
+CMD ["mysqld_exporter"]
 

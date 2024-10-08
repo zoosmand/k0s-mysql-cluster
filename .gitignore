@@ -194,3 +194,7 @@ trivy.*
 
 
 sasl_passwd*
+
+
+# Sources
+src
