@@ -10,7 +10,7 @@ if [[ "$#" -ge 2 && "$1" == "mysqld_exporter" ]]; then
     while true; do
         /usr/local/bin/mysqld_exporter \
             --mysqld.address=$2 \
-            --mysqld.username=mysqld_exporter \
+            --mysqld.username=exporter \
             --tls.insecure-skip-verify
         CNT=$((CNT+1))
         sleep 10
