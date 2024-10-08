@@ -1,0 +1,119 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndb-cluster-balancer-service
+  namespace: ndb-cluster
+spec:
+  selector:
+    uid: e9a217b0-855d-11ef-99bf-00155d052bda
+  type: LoadBalancer
+  loadBalancerIP: 10.216.80.36
+  ports:
+    - protocol: TCP
+      name: "tcp3306"
+      port: 3306
+      targetPort: 3306
+    - protocol: TCP
+      name: "tcp33060"
+      port: 33060
+      targetPort: 33060
+    - protocol: TCP
+      name: "tcp9000"
+      port: 9000
+      targetPort: 9000
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ndb-cluster-balancer
+  namespace: ndb-cluster
+  labels:
+    uid: e9a217b0-855d-11ef-99bf-00155d052bda
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      uid: e9a217b0-855d-11ef-99bf-00155d052bda
+  template:
+    metadata:
+      labels:
+        uid: e9a217b0-855d-11ef-99bf-00155d052bda
+
+    spec:
+      restartPolicy: Always
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ndbDataType
+                operator: In
+                values:
+                - ndb.node
+                - ndb.server
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-balancer
+        image: haproxy:3.1-dev-bookworm
+        args: []
+
+        ports:
+        - name: tcp3306
+          containerPort: 3306
+          hostPort: 3306
+        - name: tcp33060
+          containerPort: 33060
+          hostPort: 33060
+        - name: tcp9000
+          containerPort: 9000
+          hostPort: 9000
+
+        # startupProbe:
+        #   tcpSocket:
+        #     host: ndb-cluster-manager-mp1-0.cluster-manager-service-mp1.ndb-cluster.svc.kube.askug.net
+        #     port: 1186
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 15
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
+
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
+
+        volumeMounts:
+        - mountPath: "/usr/local/etc/haproxy/haproxy.cfg"
+          name: mysql-balancer-config
+          subPath: "haproxy.cfg"
+          readOnly: true
+
+        env:
+        - name: MYSQL_SERVER_VERSION
+          value: 8.4.2-1
+
+        resources:
+          limits:
+            memory: 512M
+            cpu: "2"
+          requests:
+            memory: 256M
+            cpu: "1"
+
+      volumes:
+      - name: mysql-balancer-config
+        configMap:
+          name: ndb-cluster-balancer-config
+
+...

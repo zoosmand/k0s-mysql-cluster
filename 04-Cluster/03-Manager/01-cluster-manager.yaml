@@ -9,11 +9,6 @@ spec:
     uid: 49a82dc6-7da6-11ef-9ea3-33d496d78e99
   type: ClusterIP
   clusterIP: None
-  ports:
-    - protocol: TCP
-      name: "http-1186"
-      port: 1186
-      targetPort: 1186
 
 ...
 
@@ -56,10 +51,10 @@ spec:
         image: hub.askug.net/mysql-cluster-mysql-ndb-cluster-manager:0.0.2-beta2
         args: []
 
-        ports:
-        - name: tcp1186
-          containerPort: 1186
-          hostPort: 1186
+        # ports:
+        # - name: tcp1186
+        #   containerPort: 1186
+        #   hostPort: 1186
 
         # livenessProbe:
         #   tcpSocket:
