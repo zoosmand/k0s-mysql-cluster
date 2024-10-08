@@ -43,12 +43,12 @@ data:
 
     backend mysql_backend
       mode tcp
-      server mysql-mp1 ndb-cluster-server-0.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:3306 check weight 99
-      server mysql-mp8 ndb-cluster-server-1.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:3306 check weight 1
+      server mysql-mp1 ndb-cluster-server-0.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:3306 check
+      server mysql-mp8 ndb-cluster-server-1.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:3306 check backup
     backend mysqlx_backend
       mode tcp
-      server mysql-mp1 ndb-cluster-server-0.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:33060 check weight 99
-      server mysql-mp8 ndb-cluster-server-1.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:33060 check weight 1
+      server mysql-mp1 ndb-cluster-server-0.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:33060 check
+      server mysql-mp8 ndb-cluster-server-1.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net:33060 check backup
 
     listen stats
       bind *:9000
