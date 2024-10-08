@@ -86,3 +86,7 @@ ENGINE=ndbcluster
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 ~~~
+
+---
+
+&copy; 2024 Askug Ltd.
