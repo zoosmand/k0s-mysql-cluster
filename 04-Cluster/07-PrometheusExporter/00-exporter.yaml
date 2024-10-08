@@ -52,7 +52,7 @@ spec:
       containers:
       # ----------------------------------------------------
       - name: cluster-server
-        image: hub.askug.net/mysql-cluster-mysql-prometheus-exporter:0.0.2-beta
+        image: hub.askug.net/mysql-cluster-mysql-prometheus-exporter:0.0.2-beta3
         args: [
           "mysqld_exporter",
           "ndb-cluster-balancer-service.ndb-cluster.svc.kube.askug.net:3306"
@@ -77,12 +77,6 @@ spec:
         #     port: 9104
         #   initialDelaySeconds: 3
         #   periodSeconds: 3
-
-        volumeMounts:
-        - mountPath: "/etc/mysql/my.cnf"
-          name: mysql-server-config
-          subPath: "my.cnf"
-          readOnly: true
 
         env:
         - name: MYSQL_EXPORTER_VERSION
