@@ -58,25 +58,25 @@ spec:
           "ndb-cluster-balancer-service.ndb-cluster.svc.kube.askug.net:3306"
         ]
 
-        # ports:
-        # - name: tcp9104
-        #   protocol: TCP
-        #   containerPort: 9104
-        #   hostPort: 9104
+        ports:
+        - name: tcp9104
+          protocol: TCP
+          containerPort: 9104
+          hostPort: 9104
 
-        # livenessProbe:
-        #   httpGet:
-        #     path: /-/healthy
-        #     port: 9104
-        #   initialDelaySeconds: 5
-        #   periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9104
+          initialDelaySeconds: 15
+          periodSeconds: 60
 
-        # readinessProbe:
-        #   httpGet:
-        #     path: /-/ready
-        #     port: 9104
-        #   initialDelaySeconds: 3
-        #   periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: 9104
+          initialDelaySeconds: 15
+          periodSeconds: 90
 
         env:
         - name: MYSQL_EXPORTER_VERSION
