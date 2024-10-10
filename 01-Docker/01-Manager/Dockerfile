@@ -5,6 +5,7 @@ LABEL build_date="2024-09-27"
 LABEL project="mysql-ndb-cluster"
 LABEL app_name="mysql-cluster-manager"
 LABEL app_version="0.0.2"
+LABEL version="8.4.2"
 LABEL name="MySQL NDB Cluster Manager"
 
 ARG CPU_ARCH=amd64

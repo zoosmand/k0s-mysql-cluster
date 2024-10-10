@@ -1,6 +1,6 @@
 # Kubernetes Deployment Makefile
 
-SHELL := /usr/bin/bash
+SHELL := /bin/bash
 ARCH := $$(dpkg --print-architecture)
 
 

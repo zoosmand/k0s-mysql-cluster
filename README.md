@@ -86,3 +86,12 @@ ENGINE=ndbcluster
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 ~~~
+
+* Get the carrier server hostname
+~~~ sql
+SHOW VARIABLES WHERE Variable_name = 'hostname'
+~~~
+
+---
+
+&copy; 2024 Askug Ltd.

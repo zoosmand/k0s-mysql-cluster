@@ -1,24 +1,17 @@
 #!/usr/bin/env bash
 
 CURRENT_DIR=$(pwd)
-CONFIG=/etc/mysql/my.cnf
 PATH=$CURRENT_DIR:$PATH
 THRESHOLD=9
 CNT=0
 
-LOGDIR=/var/log/mysql
-LOGFILE=$LOGDIR/error.log
-mkdir -p $LOGDIR
-touch $LOGFILE
-
 # -------------------------------------------------------------------------------------------
-if [[ "$@" == "mysqld" && -f $CONFIG ]]; then
+if [[ "$#" -ge 2 && "$1" == "mysqld_exporter" ]]; then
     while true; do
-        if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then 
-            /usr/sbin/mysqld; 
-        else 
-            /usr/sbin/mysqld --initialize; 
-        fi 
+        /usr/local/bin/mysqld_exporter \
+            --mysqld.address=$2 \
+            --mysqld.username=exporter \
+            --tls.insecure-skip-verify
         CNT=$((CNT+1))
         sleep 10
         [[ $CNT -gt $THRESHOLD ]] && break
@@ -26,14 +19,14 @@ if [[ "$@" == "mysqld" && -f $CONFIG ]]; then
     cat <<EOM
 
 --- Caution! ---
-The MySQL NDB Cluster Server has stopped after 10 attempts or due to wrong arguments.
+The MySQL Prometheus Exporter has stopped after 10 attempts or due to wrong arguments.
 
 EOM
 fi
 
 # -------------------------------------------------------------------------------------------
 if [ "$@" == "kill" ]; then
-    kill -9 $(pidof mysqld) && echo "Force exit." && exit -1
+    kill -9 $(pidof mysqld_exporter) && echo "Force exit." && exit -1
 fi
 
 # -------------------------------------------------------------------------------------------
@@ -41,7 +34,7 @@ if [ "$@" = "debug" ]; then
     cat <<EOM
 
 --- Caution! ---
-The MySQL NDB Cluster Data Node has stopped. The pod or container is currently in debug mode.
+The MySQL Prometheus Exporter has stopped. The pod or container is currently in debug mode.
 
 EOM
 fi

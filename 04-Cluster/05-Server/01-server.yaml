@@ -7,17 +7,8 @@ metadata:
 spec:
   selector:
     uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
-  type: LoadBalancer
-  loadBalancerIP: 10.216.80.36
-  ports:
-    - protocol: TCP
-      name: "tcp3306"
-      port: 3306
-      targetPort: 3306
-    - protocol: TCP
-      name: "tcp33060"
-      port: 33060
-      targetPort: 33060
+  type: ClusterIP
+  clusterIP: None
 
 ...
 
@@ -75,13 +66,13 @@ spec:
         image: hub.askug.net/mysql-cluster-mysql-ndb-server:0.0.2-beta
         args: []
 
-        ports:
-        - name: tcp3306
-          containerPort: 3306
-          hostPort: 3306
-        - name: tcp33060
-          containerPort: 33060
-          hostPort: 33060
+        # ports:
+        # - name: tcp3306
+        #   containerPort: 3306
+        #   hostPort: 3306
+        # - name: tcp33060
+        #   containerPort: 33060
+        #   hostPort: 33060
 
         # startupProbe:
         #   tcpSocket:
