@@ -1,0 +1,128 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndb-cluster-server-service
+  namespace: ndb-cluster
+spec:
+  selector:
+    uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
+  type: ClusterIP
+  clusterIP: None
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ndb-cluster-server
+  namespace: ndb-cluster
+  labels:
+    uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
+spec:
+  replicas: 2
+  serviceName: ndb-cluster-server-service
+  selector:
+    matchLabels:
+      uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
+  template:
+    metadata:
+      labels:
+        uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
+
+    spec:
+      restartPolicy: Always
+      affinity:
+        nodeAffinity:
+          # requiredDuringSchedulingIgnoredDuringExecution:
+          #   nodeSelectorTerms:
+          #   - matchExpressions:
+          #     - key: ndbDataType
+          #       operator: In
+          #       values:
+          #       - ndb.node
+          #       - ndb.server
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 10
+            preference:
+              matchExpressions:
+              - key: ndbDataType
+                operator: In
+                values:
+                - ndb.node
+          - weight: 90
+            preference:
+              matchExpressions:
+              - key: ndbDataType
+                operator: In
+                values:
+                - ndb.server
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-server
+        image: hub.askug.net/mysql-cluster-mysql-ndb-server:0.0.2-beta
+        args: []
+
+        # ports:
+        # - name: tcp3306
+        #   containerPort: 3306
+        #   hostPort: 3306
+        # - name: tcp33060
+        #   containerPort: 33060
+        #   hostPort: 33060
+
+        # startupProbe:
+        #   tcpSocket:
+        #     host: ndb-cluster-manager-mp1-0.cluster-manager-service-mp1.ndb-cluster.svc.kube.askug.net
+        #     port: 1186
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 15
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
+
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
+
+        volumeMounts:
+        - mountPath: "/etc/mysql/my.cnf"
+          name: mysql-server-config
+          subPath: "my.cnf"
+          readOnly: true
+        - mountPath: "/var/lib/mysql"
+          name: mysql-server-storage
+          subPath: "server/data"
+        - mountPath: "/var/log/mysql"
+          name: mysql-server-storage
+          subPath: "server/log"
+
+        env:
+        - name: MYSQL_SERVER_VERSION
+          value: 8.4.2-1
+
+        # resources:
+        #   limits:
+        #     memory: 2Gi
+        #     cpu: "2"
+        #   requests:
+        #     memory: 1Gi
+        #     cpu: "1"
+
+      volumes:
+      - name: mysql-server-config
+        configMap:
+          name: ndb-cluster-server-config
+      - name: mysql-server-storage
+        persistentVolumeClaim:
+          claimName: ndb-cluster-storage
+
+...

@@ -1,0 +1,94 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndb-cluster-manager-service
+  namespace: ndb-cluster
+spec:
+  selector:
+    uid: 49a82dc6-7da6-11ef-9ea3-33d496d78e99
+  type: ClusterIP
+  clusterIP: None
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    uid: 49a82dc6-7da6-11ef-9ea3-33d496d78e99
+  name: ndb-cluster-manager
+  namespace: ndb-cluster
+spec:
+  replicas: 2
+  serviceName: ndb-cluster-manager-service
+  selector:
+    matchLabels:
+      uid: 49a82dc6-7da6-11ef-9ea3-33d496d78e99
+  template:
+    metadata:
+      labels:
+        uid: 49a82dc6-7da6-11ef-9ea3-33d496d78e99
+  
+    spec:
+      restartPolicy: Always
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ndbDataType
+                operator: In
+                values:
+                - ndb.node
+                - ndb.server
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-manager
+        image: hub.askug.net/mysql-cluster-mysql-ndb-cluster-manager:0.0.2-beta2
+        args: []
+
+        # ports:
+        # - name: tcp1186
+        #   containerPort: 1186
+        #   hostPort: 1186
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 50
+
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp1186
+        #   initialDelaySeconds: 40
+        #   periodSeconds: 60
+
+        volumeMounts:
+        - mountPath: "/var/lib/mysql/config.ini"
+          name: cluster-config
+          subPath: "config.ini"
+          readOnly: true
+
+        env:
+        - name: MYSQL_CLUSTER_MANAGER_VERSION
+          value: 8.4.2-1
+
+        # resources:
+        #   limits:
+        #     memory: 2Gi
+        #     cpu: "2"
+        #   requests:
+        #     memory: 1Gi
+        #     cpu: "1"
+
+      volumes:
+      - name: cluster-config
+        configMap:
+          name: ndb-cluster-manager-config
+
+...

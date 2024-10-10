@@ -37,7 +37,7 @@ spec:
         app: fd54874a-7f99-11ee-b3a4-fb256381cecf
     spec:
       nodeSelector:
-        node-type: worker
+        kubernetes.io/hostname: mp1
       restartPolicy: Always
       hostname: mysql-exporter
       subdomain: mysql-exporter-service

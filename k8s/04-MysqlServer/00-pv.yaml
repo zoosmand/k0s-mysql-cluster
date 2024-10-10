@@ -2,21 +2,22 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mysql-cluster-server-storage-10
+  name: mysql-cluster-server-storage-mp1
   labels:
     file-system: ext4
+    node-name: mp1
     physical-volume: lvm-thin-partition
-    max-size: 10GiB
+    max-size: 20GiB
 spec:
   capacity:
-    storage: 10Gi
+    storage: 20Gi
   volumeMode: Filesystem
   accessModes:
   - ReadWriteMany
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: mysql-server-10
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: mysql-data-server-mp1
   local:
-    path: /mnt/mysql/server/10
+    path: /mnt/kube/mysql/server
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -25,5 +26,37 @@ spec:
           operator: In
           values:
           - mp1
+
+...
+
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-cluster-server-storage-mp8
+  labels:
+    file-system: ext4
+    node-name: mp8
+    physical-volume: lvm-partition
+    max-size: 20GiB
+spec:
+  capacity:
+    storage: 20Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: mysql-data-server-mp8
+  local:
+    path: /mnt/kube/mysql/server
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - mp8
 
 ...

@@ -1,0 +1,122 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-server-service-mp1
+  namespace: mysql-cluster
+spec:
+  selector:
+    app: fdbb0656-7ca5-11ee-9535-00155d91d86a
+  type: LoadBalancer
+  loadBalancerIP: 10.216.80.36
+  ports:
+    - protocol: TCP
+      name: "tcp3306"
+      port: 3306
+      targetPort: 3306
+    - protocol: TCP
+      name: "tcp33060"
+      port: 33060
+      targetPort: 33060
+
+...
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: fdbb0656-7ca5-11ee-9535-00155d91d86a
+  name: mysql-cluster-server-mp1
+  namespace: mysql-cluster
+spec:
+  replicas: 1
+  serviceName: cluster-server-service-mp1
+  selector:
+    matchLabels:
+      app: fdbb0656-7ca5-11ee-9535-00155d91d86a
+  template:
+    metadata:
+      labels:
+        app: fdbb0656-7ca5-11ee-9535-00155d91d86a
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: mp1
+      restartPolicy: Always
+
+      containers:
+      # ----------------------------------------------------
+      - name: cluster-server
+        image: hub.askug.net/mysql-server-sb-11:0.0.4
+        args: [ "-c", "
+          while true; do
+            if [ $(ls /var/lib/mysql | wc -l) -gt 0 ]; then 
+              /usr/sbin/mysqld; 
+            else 
+              /usr/sbin/mysqld --initialize; 
+            fi; 
+          done;
+          tail -f /dev/null # for debug purpose
+          " ]
+
+        ports:
+        - name: tcp3306
+          containerPort: 3306
+          hostPort: 3306
+        - name: tcp33060
+          containerPort: 33060
+          hostPort: 33060
+
+        # startupProbe:
+        #   tcpSocket:
+        #     host: mysql-cluster-manager-mp1-0.cluster-manager-service-mp1.mysql-cluster.svc.kube.askug.net
+        #     port: 1186
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 15
+
+        # livenessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
+
+        # readinessProbe:
+        #   tcpSocket:
+        #     port: tcp3306
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 60
+
+        volumeMounts:
+        - mountPath: "/etc/mysql/my.cnf"
+          name: server-config
+          subPath: "my.cnf"
+          readOnly: true
+        - mountPath: "/var/lib/mysql"
+          name: mysql-data-volume
+          subPath: "mysql-data"
+        - mountPath: "/var/log/mysql"
+          name: mysql-data-volume
+          subPath: "logs"
+
+        env:
+        - name: MYSQL_SERVER_VERSION
+          value: "8.1"
+
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: "2"
+          requests:
+            memory: 1Gi
+            cpu: "1"
+
+      volumes:
+      - name: server-config
+        configMap:
+          name: mysql-cluster-server-config
+      - name: mysql-data-volume
+        persistentVolumeClaim:
+          claimName: mysql-cluster-server-storage-mp1
+
+...
