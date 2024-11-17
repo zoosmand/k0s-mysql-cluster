@@ -94,4 +94,4 @@ SHOW VARIABLES WHERE Variable_name = 'hostname'
 
 ---
 
-&copy; 2024 Askug Ltd.
+&copy; 2024, Askug Ltd.

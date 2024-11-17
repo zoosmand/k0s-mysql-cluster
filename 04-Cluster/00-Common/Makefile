@@ -16,4 +16,4 @@ delete:
 	# ---
 	$(MAKE) -f ../common.mk $@
 	@ printf "\n\t--- Delete namespace ---\n\n";
-	kubectl delete -f ./00-namespace.yaml
+	kubectl delete -f ./00-namespace.yaml || true
