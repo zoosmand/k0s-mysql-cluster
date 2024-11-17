@@ -35,7 +35,7 @@ metadata:
   labels:
     uid: e9a217b0-855d-11ef-99bf-00155d052bda
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       uid: e9a217b0-855d-11ef-99bf-00155d052bda
@@ -51,11 +51,10 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: ndbDataType
+              - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - ndb.node
-                - ndb.server
+                - mp1
 
       containers:
       # ----------------------------------------------------
@@ -74,24 +73,25 @@ spec:
           containerPort: 9000
           hostPort: 9000
 
-        # startupProbe:
-        #   tcpSocket:
-        #     host: ndb-cluster-manager-mp1-0.cluster-manager-service-mp1.ndb-cluster.svc.kube.askug.net
-        #     port: 1186
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 15
+        startupProbe:
+          tcpSocket:
+            # host: ndb-cluster-server-0.ndb-cluster-server-service.ndb-cluster.svc.kube.askug.net
+            # port: 3306
+            port: tcp9000
+          initialDelaySeconds: 10
+          periodSeconds: 15
 
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: tcp3306
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 60
+        livenessProbe:
+          tcpSocket:
+            port: tcp3306
+          initialDelaySeconds: 10
+          periodSeconds: 30
 
-        # readinessProbe:
-        #   tcpSocket:
-        #     port: tcp3306
-        #   initialDelaySeconds: 10
-        #   periodSeconds: 60
+        readinessProbe:
+          tcpSocket:
+            port: tcp3306
+          initialDelaySeconds: 10
+          periodSeconds: 60
 
         volumeMounts:
         - mountPath: "/usr/local/etc/haproxy/haproxy.cfg"
