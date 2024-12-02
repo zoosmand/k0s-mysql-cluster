@@ -1,15 +1,15 @@
 FROM debian:bookworm-slim
 
 LABEL maintainer="zoosmand@gmail.com"
-LABEL build_date="2024-10-07"
+LABEL build_date="2024-12-01"
 LABEL project="mysql-ndb-cluster"
 LABEL app_name="mysql-cluster-prometheus-exporter"
-LABEL app_version="0.0.2"
+LABEL app_version="0.0.3"
 LABEL version="0.15.1"
 LABEL name="MySQL NDB Cluster Prometheus Exporter"
 
 ARG CPU_ARCH=amd64
-ARG BUILD_VERSION=0.0.2
+ARG BUILD_VERSION=0.0.1
 
 RUN \
     set -eux; \

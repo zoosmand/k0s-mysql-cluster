@@ -2,13 +2,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ndb-cluster-balancer-service
+  name: ndb-cluster-balancer-svc
   namespace: ndb-cluster
 spec:
   selector:
     uid: e9a217b0-855d-11ef-99bf-00155d052bda
   type: LoadBalancer
-  loadBalancerIP: 10.216.80.36
+  loadBalancerIP: 10.203.10.33
   ports:
     - protocol: TCP
       name: "tcp3306"
@@ -101,7 +101,7 @@ spec:
 
         env:
         - name: MYSQL_SERVER_VERSION
-          value: 8.4.2-1
+          value: 8.4.3-lts
 
         resources:
           limits:

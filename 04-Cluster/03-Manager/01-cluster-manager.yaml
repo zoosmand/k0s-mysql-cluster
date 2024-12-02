@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ndb-cluster-manager-service
+  name: ndb-cluster-manager-svc
   namespace: ndb-cluster
 spec:
   selector:
@@ -23,7 +23,7 @@ metadata:
   namespace: ndb-cluster
 spec:
   replicas: 2
-  serviceName: ndb-cluster-manager-service
+  serviceName: ndb-cluster-manager-svc
   selector:
     matchLabels:
       uid: 49a82dc6-7da6-11ef-9ea3-33d496d78e99
@@ -48,7 +48,7 @@ spec:
       containers:
       # ----------------------------------------------------
       - name: cluster-manager
-        image: hub.askug.net/mysql-cluster-mysql-ndb-cluster-manager:0.0.2-beta2
+        image: hub.askug.net/mysql-cluster-mysql-ndb-cluster-manager:0.0.3
         args: []
 
         # ports:
@@ -76,7 +76,7 @@ spec:
 
         env:
         - name: MYSQL_CLUSTER_MANAGER_VERSION
-          value: 8.4.2-1
+          value: 8.4.3-lts
 
         # resources:
         #   limits:

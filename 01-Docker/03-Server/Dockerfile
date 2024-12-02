@@ -1,11 +1,11 @@
 FROM debian:bookworm-slim
 
 LABEL maintainer="zoosmand@gmail.com"
-LABEL build_date="2024-09-27"
+LABEL build_date="2024-12-01"
 LABEL project="mysql-ndb-cluster"
 LABEL app_name="mysql-cluster-manager"
-LABEL app_version="0.0.2"
-LABEL version="8.4.2"
+LABEL app_version="0.0.1"
+LABEL version="8.4.3-lts"
 LABEL name="MySQL NDB Cluster Server"
 
 ARG CPU_ARCH=amd64

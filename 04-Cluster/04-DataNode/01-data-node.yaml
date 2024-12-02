@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ndb-cluster-data-node-service
+  name: ndb-cluster-data-node-svc
   namespace: ndb-cluster
 spec:
   selector:
@@ -23,7 +23,7 @@ metadata:
     uid: 2d032808-7db3-11ef-a327-83cea4adb897
 spec:
   replicas: 2
-  serviceName: ndb-cluster-data-node-service
+  serviceName: ndb-cluster-data-node-svc
   selector:
     matchLabels:
       uid: 2d032808-7db3-11ef-a327-83cea4adb897
@@ -36,34 +36,34 @@ spec:
       restartPolicy: Always
       affinity:
         nodeAffinity:
-          # requiredDuringSchedulingIgnoredDuringExecution:
-          #   nodeSelectorTerms:
-          #   - matchExpressions:
-          #     - key: ndbDataType
-          #       operator: In
-          #       values:
-          #       - ndb.node
-          #       - ndb.server
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 90
-            preference:
-              matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
               - key: ndbDataType
                 operator: In
                 values:
                 - ndb.node
-          - weight: 10
-            preference:
-              matchExpressions:
-              - key: ndbDataType
-                operator: In
-                values:
                 - ndb.server
+          # preferredDuringSchedulingIgnoredDuringExecution:
+          # - weight: 90
+          #   preference:
+          #     matchExpressions:
+          #     - key: ndbDataNode
+          #       operator: In
+          #       values:
+          #       - "yes"
+          # - weight: 10
+          #   preference:
+          #     matchExpressions:
+          #     - key: ndbDataServer
+          #       operator: In
+          #       values:
+          #       - "yes"
 
       containers:
       # ----------------------------------------------------
       - name: cluster-data-node
-        image: hub.askug.net/mysql-cluster-mysql-ndb-data-node:0.0.2-beta2
+        image: hub.askug.net/mysql-cluster-mysql-ndb-data-node:0.0.3
         args: []
 
         volumeMounts:
@@ -77,7 +77,7 @@ spec:
 
         env:
         - name: MYSQL_CLUSTER_DATA_NODE_VERSION
-          value: 8.4.2-1
+          value: 8.4.3-lts
 
         # resources:
         #   limits:

@@ -2,13 +2,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ndb-cluster-server-service
+  name: ndb-cluster-server-svc
   namespace: ndb-cluster
 spec:
   selector:
     uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
   type: ClusterIP
   clusterIP: None
+  # ports:
+  #   - protocol: TCP
+  #     name: "tcp3306"
+  #     port: 3306
+  #     targetPort: 3306
+  #   - protocol: TCP
+  #     name: "tcp33060"
+  #     port: 33060
+  #     targetPort: 33060
 
 ...
 
@@ -23,7 +32,7 @@ metadata:
     uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
 spec:
   replicas: 2
-  serviceName: ndb-cluster-server-service
+  serviceName: ndb-cluster-server-svc
   selector:
     matchLabels:
       uid: 7b9a3af2-7db7-11ef-8a5b-5f840e94aa09
@@ -36,34 +45,34 @@ spec:
       restartPolicy: Always
       affinity:
         nodeAffinity:
-          # requiredDuringSchedulingIgnoredDuringExecution:
-          #   nodeSelectorTerms:
-          #   - matchExpressions:
-          #     - key: ndbDataType
-          #       operator: In
-          #       values:
-          #       - ndb.node
-          #       - ndb.server
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 10
-            preference:
-              matchExpressions:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
               - key: ndbDataType
                 operator: In
                 values:
                 - ndb.node
-          - weight: 90
-            preference:
-              matchExpressions:
-              - key: ndbDataType
-                operator: In
-                values:
                 - ndb.server
+          # preferredDuringSchedulingIgnoredDuringExecution:
+          # - weight: 90
+          #   preference:
+          #     matchExpressions:
+          #     - key: ndbDataServer
+          #       operator: In
+          #       values:
+          #       - "yes"
+          # - weight: 10
+          #   preference:
+          #     matchExpressions:
+          #     - key: ndbDataNode
+          #       operator: In
+          #       values:
+          #       - "yes"
 
       containers:
       # ----------------------------------------------------
       - name: cluster-server
-        image: hub.askug.net/mysql-cluster-mysql-ndb-server:0.0.2-beta
+        image: hub.askug.net/mysql-cluster-mysql-ndb-server:0.0.3
         args: []
 
         # ports:
@@ -107,7 +116,7 @@ spec:
 
         env:
         - name: MYSQL_SERVER_VERSION
-          value: 8.4.2-1
+          value: 8.4.3-lts
 
         # resources:
         #   limits:

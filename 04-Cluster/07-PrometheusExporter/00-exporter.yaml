@@ -2,18 +2,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ndb-cluster-exporter-service
+  name: ndb-cluster-exporter-svc
   namespace: ndb-cluster
 spec:
   selector:
     uid: 87a64c70-8594-11ef-9428-7fa2bd4fe393
-  type: LoadBalancer
-  loadBalancerIP: 10.216.80.37
-  ports:
-    - protocol: TCP
-      name: "tcp9104"
-      port: 9104
-      targetPort: 9104
+  type: ClusterIP
+  clusterIP: None
+  # ports:
+  #   - protocol: TCP
+  #     name: "tcp9104"
+  #     port: 9104
+  #     targetPort: 9104
 
 ...
 
@@ -52,10 +52,10 @@ spec:
       containers:
       # ----------------------------------------------------
       - name: cluster-server
-        image: hub.askug.net/mysql-cluster-mysql-prometheus-exporter:0.0.2-beta3
+        image: hub.askug.net/mysql-cluster-mysql-prometheus-exporter:0.0.3
         args: [
           "mysqld_exporter",
-          "ndb-cluster-balancer-service.ndb-cluster.svc.kube.askug.net:3306"
+          "ndb-cluster-balancer-svc.ndb-cluster.svc.kube.askug.net:3306"
         ]
 
         ports:

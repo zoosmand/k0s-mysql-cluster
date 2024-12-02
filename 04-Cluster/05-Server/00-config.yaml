@@ -42,8 +42,8 @@ data:
 
     # ---------------------------------------------------------------------------------
     [mysql_cluster]
-    ndb-connectstring   = ndb-cluster-manager-0.ndb-cluster-manager-service.ndb-cluster.svc.kube.askug.net,ndb-cluster-manager-1.ndb-cluster-manager-service.ndb-cluster.svc.kube.askug.net
-    ndb-mgmd-host       = ndb-cluster-manager-0.ndb-cluster-manager-service.ndb-cluster.svc.kube.askug.net,ndb-cluster-manager-1.ndb-cluster-manager-service.ndb-cluster.svc.kube.askug.net
+    ndb-connectstring   = ndb-cluster-manager-0.ndb-cluster-manager-svc.ndb-cluster.svc.kube.askug.net,ndb-cluster-manager-1.ndb-cluster-manager-svc.ndb-cluster.svc.kube.askug.net
+    ndb-mgmd-host       = ndb-cluster-manager-0.ndb-cluster-manager-svc.ndb-cluster.svc.kube.askug.net,ndb-cluster-manager-1.ndb-cluster-manager-svc.ndb-cluster.svc.kube.askug.net
 
 
     # ---------------------------------------------------------------------------------

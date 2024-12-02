@@ -1,8 +1,7 @@
-# Mysql Cluster Management Server
+# Mysql NDB Cluster Management Server
 
-SHELL := /usr/bin/bash
-VERSION := $$(cat ../.version)
-CPU_ARCH := $$(dpkg --print-architecture)
+include ../common.mk
+
 SERVICE := mysql-ndb-server
 
 PLUGINS := authentication_kerberos_client.so
@@ -38,11 +37,11 @@ PLUGINS += validate_password.so
 PLUGINS += version_token.so
 
 
-LIBS := libfido2.so.1.13.0:libfido2.so.1
+LIBS := libfido2.so.1.15.0:libfido2.so.1
 LIBS += libssl.so.3:libssl.so
 LIBS += libsasl2.so.3.0.0:libsasl2.so.3:libsasl2.so
-LIBS += libldap-2.5.so.0.1.8:libldap-2.5.so.0:libldap.so
-LIBS += liblber-2.5.so.0.1.8:liblber-2.5.so.0:liblber.so
+LIBS += libldap-2.5.so.0.1.13:libldap-2.5.so.0:libldap.so
+LIBS += liblber-2.5.so.0.1.13:liblber-2.5.so.0:liblber.so
 LIBS += libkrb5support.so.0.1:libkrb5support.so.0:libkrb5support.so
 LIBS += libkrb5.so.3.3:libkrb5.so.3:libkrb5.so
 LIBS += libk5crypto.so.3.1:libk5crypto.so.3:libk5crypto.so
@@ -50,7 +49,7 @@ LIBS += libgssapi_krb5.so.2.2:libgssapi_krb5.so.2:libgssapi_krb5.so
 LIBS += libcrypto.so.3:libcrypto.so
 LIBS += libcom_err.so.3.0:libcom_err.so.3:libcom_err.so
 
-LIB2S := libmysqlclient.so.24.0.2:libmysqlclient.so.24:libmysqlclient.so
+LIB2S := libmysqlclient.so.24.0.3:libmysqlclient.so.24:libmysqlclient.so
 
 LIB3S := libmysqlclient.a
 LIB3S += libmysqlservices.a
@@ -333,29 +332,9 @@ DEBUGS += validate_password.so
 DEBUGS += version_token.so
 
 
-.PHONY: all
-all:
-	@ echo "It works!"
-
-
-.PHONY: check
-check:
-	@ image_built=false; \
-	source ../.requisites; \
-	while read tag; do \
-		if [[ ${VERSION} == $${tag//[\",\[\]]} ]]; then \
-			image_built=true; \
-		fi; \
-	done <<< "$$(curl -s https://$$REGISTRY/v2/$$PROJECT-$(SERVICE)/tags/list | jq -r .tags)"; \
-	if [[ $$image_built == true ]]; then \
-		printf "\n---\nImage version ${VERSION} alredy in the repository.\n---\n\n"; \
-		exit -1; \
-	fi
-
-
 .PHONY: build
 build:
-	@ echo "Building the image."
+	@ $(MAKE) -f ../common.mk $@
 	@ $(MAKE) check
 	@ source ../.requisites; \
 	CURRENT_DIR=$$(pwd); \
@@ -433,18 +412,4 @@ build:
 		install -D -m 0644 $$SRC_PATH/support-files/$$item $$DST_PATH/share/$$item; \
 	done; \
 	docker buildx build --no-cache -t $$REGISTRY/$$PROJECT-$(SERVICE):${VERSION} . > .log 2>&1
-
-
-.PHONY: push
-push:
-	@ echo "Pushing the image."
-	@ $(MAKE) check
-	@ source ../.requisites; \
-	docker push $$REGISTRY/$$PROJECT-$(SERVICE):${VERSION}
-	$(MAKE) cleanup
-
-
-.PHONY: cleanup
-cleanup:
-	rm -rf ./src
 
